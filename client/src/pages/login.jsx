@@ -63,10 +63,10 @@ export default function LoginPage() {
 
       {/* Background Image Section */}
       <div
-        className="absolute top-0 left-0 w-[60%] h-full bg-no-repeat bg-cover"
+        className="absolute top-0 left-0 w-full sm:w-[60%] h-full bg-no-repeat bg-cover"
         style={{
           backgroundImage: `url(${logo})`,
-          backgroundPosition: 'center', // Ensure the logo stays centered
+          backgroundPosition: 'center', // Ensure the logo stays centered on small screens
         }}
       ></div>
 
