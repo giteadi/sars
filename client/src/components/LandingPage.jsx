@@ -45,46 +45,44 @@ export default function LandingPage() {
       </header>
 
       {/* Hero Section */}
-     <section className="container mx-auto px-4 py-16 md:py-24 lg:py-32">
-  <div className="flex flex-col md:flex-row items-center justify-between relative">
-    <div className="md:w-1/2 space-y-6 mb-8 md:mb-0">
-      <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-amber-400 leading-tight">
-        SARS
-      </h1>
-      <p className="text-xl md:text-2xl lg:text-3xl text-amber-400">
-        Make your home
-        <br />
-        Creative and Unique
-      </p>
-      <p className="text-sm md:text-base lg:text-lg text-amber-400">
-        DESIGN YOUR DREAM DOOR
-      </p>
-      <button className="bg-amber-400 text-black px-6 py-2 rounded-full hover:bg-amber-300 transition duration-300">
-        Explore Now
-      </button>
-    </div>
+      <section className="container mx-auto px-4 py-16 md:py-24 lg:py-32">
+        <div className="flex flex-col md:flex-row items-center justify-between relative">
+          <div className="md:w-1/2 space-y-6 mb-8 md:mb-0">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-amber-400 leading-tight">
+              SARS
+            </h1>
+            <p className="text-xl md:text-2xl lg:text-3xl text-amber-400">
+              Make your home
+              <br />
+              Creative and Unique
+            </p>
+            <p className="text-sm md:text-base lg:text-lg text-amber-400">
+              DESIGN YOUR DREAM DOOR
+            </p>
+            <button className="bg-amber-400 text-black px-6 py-2 rounded-full hover:bg-amber-300 transition duration-300">
+              Explore Now
+            </button>
+          </div>
 
-    {/* Door Frame in the Background */}
-    <div className="absolute inset-0 z-0 flex justify-center items-center">
-      <img
-        src="https://res.cloudinary.com/bazeercloud/image/upload/v1736018602/Grey_Door_frame-Photoroom_1_tvitxq.png"
-        alt="Door Frame"
-        className="w-full max-w-lg mx-auto h-auto object-contain opacity-60"
-      />
-    </div>
+          {/* Door Frame in the Background */}
+          <div className="absolute inset-0 z-0 flex justify-center items-center">
+            <img
+              src="https://res.cloudinary.com/bazeercloud/image/upload/v1736018602/Grey_Door_frame-Photoroom_1_tvitxq.png"
+              alt="Door Frame"
+              className="w-full max-w-lg mx-auto h-auto object-contain opacity-60"
+            />
+          </div>
 
-    {/* Front Door Image */}
-    <div className="md:w-1/2 relative z-10">
-      <img
-        src="https://res.cloudinary.com/bazeercloud/image/upload/v1736018602/Ivry_Door_with_open-Photoroom_de4e98.png"
-        alt="Featured Door"
-        className="w-full max-w-lg mx-auto h-auto object-contain"
-      />
-    </div>
-  </div>
-</section>
-
-
+          {/* Front Door Image */}
+          <div className="md:w-1/2 relative z-10">
+            <img
+              src="https://res.cloudinary.com/bazeercloud/image/upload/v1736018602/Ivry_Door_with_open-Photoroom_de4e98.png"
+              alt="Featured Door"
+              className="w-full max-w-lg mx-auto h-auto object-contain"
+            />
+          </div>
+        </div>
+      </section>
 
       {/* Product Section */}
       <Carosal />
@@ -115,22 +113,22 @@ export default function LandingPage() {
 
       {/* Eco Friendly */}
       <section className="container mx-auto px-4 py-16">
-        <div className="bg-gray-800 p-8 rounded-xl">
-          <div className="flex justify-center space-x-8 mb-4">
+    <div className="bg-yellow-400/10 backdrop-blur-md border border-white/30 p-12 rounded-3xl shadow-lg">
+        <div className="flex justify-between items-center mb-4">
             <img
-              src="https://res.cloudinary.com/bazeercloud/image/upload/v1736019937/rb_222_hokupo.png"
-              alt="Eco Friendly"
-              className="w-24 h-24 object-contain"
+                src="https://res.cloudinary.com/bazeercloud/image/upload/v1736019937/rb_222_hokupo.png"
+                alt="Eco Friendly"
+                className="w-32 h-32 object-contain"
             />
             <img
-              src="https://res.cloudinary.com/bazeercloud/image/upload/v1736020045/rb_114044_u30hxx.png"
-              alt="Certification"
-              className="w-24 h-24 object-contain"
+                src="https://res.cloudinary.com/bazeercloud/image/upload/v1736020045/rb_114044_u30hxx.png"
+                alt="Certification"
+                className="w-32 h-32 object-contain"
             />
-          </div>
-          <p className="text-center text-lg text-gray-400">ECO FRIENDLY</p>
         </div>
-      </section>
+        <p className="text-left text-xl text-gray-400">ECO FRIENDLY</p>
+    </div>
+</section>
 
       {/* FAQs */}
       <FAQ />
