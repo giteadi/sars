@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { FaSearch, FaShoppingCart, FaUser } from 'react-icons/fa';
+import { FaSearch, FaShoppingCart, FaUser, FaBars } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+
 const Navbar = () => {
-  // State to track scroll position
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
-    // Function to handle scroll event
     const handleScroll = () => {
       if (window.scrollY > 50) {
         setIsScrolled(true);
@@ -15,10 +15,8 @@ const Navbar = () => {
       }
     };
 
-    // Attach the scroll event listener
     window.addEventListener('scroll', handleScroll);
 
-    // Clean up the event listener on component unmount
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
@@ -28,8 +26,8 @@ const Navbar = () => {
     <nav
       className={`fixed top-0 left-0 right-0 z-10 transition-all duration-300 ${
         isScrolled
-          ? 'w-4/5 rounded-full bg-white/10'  // Transparent white when scrolled
-          : 'w-full bg-zinc-950'  // Solid black background by default
+          ? 'w-4/5 rounded-full bg-white/10'
+          : 'w-full bg-zinc-950'
       } mx-auto backdrop-blur-sm`}
     >
       <div className="container px-4 py-4 flex items-center justify-between">
@@ -42,37 +40,44 @@ const Navbar = () => {
           />
         </div>
 
+        {/* Hamburger Icon (for mobile) */}
+        <div className="md:hidden flex items-center">
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="text-white"
+          >
+            <FaBars className="w-6 h-6" />
+          </button>
+        </div>
+
         {/* Navigation Links */}
-        <div className="hidden md:flex items-center px-8 py-2 rounded-full">
+        <div
+          className={`md:flex items-center px-8 py-2 rounded-full space-x-4 ${
+            isMenuOpen ? 'flex' : 'hidden'
+          } absolute top-16 left-0 right-0 bg-zinc-950 md:relative md:flex-row md:space-x-8 md:top-0`}
+        >
           <Link
-           to='/'
+            to="/"
             className="mx-4 text-white hover:text-amber-400 transition-colors"
           >
             HOME
-         </Link>
-         <Link
-           to='/product'
+          </Link>
+          <Link
+            to="/product"
             className="mx-4 text-white hover:text-amber-400 transition-colors"
           >
             PRODUCT
-         </Link>
-         {/* <Link
-           to='/'
-            className="mx-4 text-white hover:text-amber-400 transition-colors"
-          >
-            HELPFUL TIPS
-         </Link> */}
-         <Link
-           to='/blogs'
+          </Link>
+          <Link
+            to="/blogs"
             className="mx-4 text-white hover:text-amber-400 transition-colors"
           >
             BLOG
-         </Link>
+          </Link>
         </div>
 
         {/* Icons */}
         <div className="flex items-center space-x-6">
-       
           <button className="p-2 hover:text-amber-400 transition-colors">
             <FaShoppingCart className="w-6 h-6" />
           </button>
