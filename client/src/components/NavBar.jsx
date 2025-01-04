@@ -63,7 +63,7 @@ const Navbar = () => {
             HELPFUL TIPS
          </Link> */}
          <Link
-           to='/'
+           to='/blogs'
             className="mx-4 text-white hover:text-amber-400 transition-colors"
           >
             BLOG
@@ -72,9 +72,7 @@ const Navbar = () => {
 
         {/* Icons */}
         <div className="flex items-center space-x-6">
-          <button className="p-2 hover:text-amber-400 transition-colors">
-            <FaSearch className="w-6 h-6" />
-          </button>
+       
           <button className="p-2 hover:text-amber-400 transition-colors">
             <FaShoppingCart className="w-6 h-6" />
           </button>
