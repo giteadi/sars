@@ -13,76 +13,62 @@ import Carosal from "./Carosal";
 import Reviews from "../pages/Reviews";
 import Footer from "../pages/Footer";
 
+
 export default function LandingPage() {
   return (
     <div className="w-full bg-black text-white">
-      {/* Header */}
-      <header className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <div className="w-12 h-12">
-          <img
-            src="https://res.cloudinary.com/bazeercloud/image/upload/v1736017187/logo_gqb8jl.png"
-            alt="SARS Logo"
-            className="w-full h-full object-contain"
-          />
-        </div>
-        <nav className="hidden md:flex space-x-8">
-          <a href="#" className="text-amber-400 hover:text-amber-300">
-            HOME
-          </a>
-          <a href="#" className="text-amber-400 hover:text-amber-300">
-            ABOUT
-          </a>
-          <a href="#" className="text-amber-400 hover:text-amber-300">
-            PRODUCTS
-          </a>
-          <a href="#" className="text-amber-400 hover:text-amber-300">
-            BLOG
-          </a>
-          <Link to="/login" className="text-amber-400 hover:text-amber-300">
-            LOGIN
-          </Link>
-        </nav>
-      </header>
-
-      {/* Hero Section */}
-      <section className="container mx-auto px-4 py-16 md:py-24 lg:py-32">
-        <div className="flex flex-col md:flex-row items-center justify-between relative">
-          <div className="md:w-1/2 space-y-6 mb-8 md:mb-0">
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-amber-400 leading-tight">
-              SARS
-            </h1>
-            <p className="text-xl md:text-2xl lg:text-3xl text-amber-400">
-              Make your home
-              <br />
-              Creative and Unique
-            </p>
-            <p className="text-sm md:text-base lg:text-lg text-amber-400">
-              DESIGN YOUR DREAM DOOR
-            </p>
-            <button className="bg-amber-400 text-black px-6 py-2 rounded-full hover:bg-amber-300 transition duration-300">
-              Explore Now
-            </button>
-          </div>
-
-          {/* Door Frame in the Background */}
-          <div className="absolute inset-0 z-0 flex justify-center items-center">
+     
+        <header className="container mx-auto px-4 py-4 flex justify-between items-center border-2 border-amber-400/20">
+          <div className="w-12 h-12">
             <img
-              src="https://res.cloudinary.com/bazeercloud/image/upload/v1736018602/Grey_Door_frame-Photoroom_1_tvitxq.png"
-              alt="Door Frame"
-              className="w-full max-w-lg mx-auto h-auto object-contain opacity-60"
+          src="https://res.cloudinary.com/bazeercloud/image/upload/v1736017187/logo_gqb8jl.png"
+          alt="SARS Logo"
+          className="w-full h-full object-contain"
             />
           </div>
+        </header>
 
-          {/* Front Door Image */}
-          <div className="md:w-1/2 relative z-10">
-            <img
-              src="https://res.cloudinary.com/bazeercloud/image/upload/v1736018602/Ivry_Door_with_open-Photoroom_de4e98.png"
-              alt="Featured Door"
-              className="w-full max-w-lg mx-auto h-auto object-contain"
-            />
-          </div>
-        </div>
-      </section>
+        {/* Hero Section */}
+     <section className="container mx-auto px-4 py-16 md:py-24 lg:py-32 relative">
+  <div className="absolute inset-0 bg-yellow-200/10 z-0"></div> {/* Yellow background with transparency */}
+  <div className="flex flex-col md:flex-row items-center justify-between relative z-10">
+    <div className="md:w-1/2 space-y-6 mb-8 md:mb-0">
+      <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-amber-400 leading-tight">
+        SARS
+      </h1>
+      <p className="text-xl md:text-2xl lg:text-3xl text-amber-400">
+        Make your home
+        <br />
+        Creative and Unique
+      </p>
+      <p className="text-sm md:text-base lg:text-lg text-amber-400">
+        DESIGN YOUR DREAM DOOR
+      </p>
+      <button className="bg-amber-400 text-black px-6 py-2 rounded-full hover:bg-amber-300 transition duration-300">
+        Explore Now
+      </button>
+    </div>
+
+    {/* Door Frame in the Background */}
+    <div className="absolute inset-0 z-0 flex justify-center items-center">
+      <img
+        src="https://res.cloudinary.com/bazeercloud/image/upload/v1736018602/Grey_Door_frame-Photoroom_1_tvitxq.png"
+        alt="Door Frame"
+        className="w-full max-w-lg mx-auto h-auto object-contain opacity-60"
+      />
+    </div>
+
+    {/* Front Door Image */}
+    <div className="md:w-1/2 relative z-10">
+      <img
+        src="https://res.cloudinary.com/bazeercloud/image/upload/v1736018602/Ivry_Door_with_open-Photoroom_de4e98.png"
+        alt="Featured Door"
+        className="w-full max-w-lg mx-auto h-auto object-contain"
+      />
+    </div>
+  </div>
+</section>
+
 
       {/* Product Section */}
       <Carosal />
