@@ -1,8 +1,5 @@
-import { User, Search, ShoppingCart } from 'lucide-react';
-
-import { Link } from 'react-router-dom';  // Correct import
-
-export default function LoginPage() {
+import { User, Mail, Lock, ShoppingCart } from 'lucide-react';
+export default function RegisterPage() {
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
       {/* Navigation Bar */}
@@ -11,6 +8,7 @@ export default function LoginPage() {
           {/* Logo */}
           <div className="w-16 h-16">
             <img
+            loading='lazy'
               src='https://res.cloudinary.com/bazeercloud/image/upload/v1736017187/logo_gqb8jl.png'
               alt="Logo"
               className="w-full h-full object-contain"
@@ -19,36 +17,36 @@ export default function LoginPage() {
 
           {/* Navigation Links */}
           <div className="hidden md:flex items-center bg-zinc-950/50 backdrop-blur-sm px-8 py-2 rounded-full">
-            <a
-              href="#"
+           <Link
+             to='/'
               className="mx-4 text-white hover:text-amber-400 transition-colors"
             >
               HOME
-            </a>
-            <a
-              href="#"
+            </Link>
+           <Link
+             to='/product'
               className="mx-4 text-white hover:text-amber-400 transition-colors"
             >
               PRODUCT
-            </a>
-            <a
-              href="#"
+            </Link>
+           <Link
+             to='#'
               className="mx-4 text-white hover:text-amber-400 transition-colors"
             >
               HELPFUL TIPS
-            </a>
-            <a
-              href="#"
+            </Link>
+           <Link
+             to='/blogs'
               className="mx-4 text-white hover:text-amber-400 transition-colors"
             >
               BLOG
-            </a>
+            </Link>
           </div>
 
           {/* Icons */}
           <div className="flex items-center space-x-6">
             <button className="p-2 hover:text-amber-400 transition-colors">
-              <Search className="w-6 h-6" />
+              <Mail className="w-6 h-6" />
             </button>
             <button className="p-2 hover:text-amber-400 transition-colors">
               <ShoppingCart className="w-6 h-6" />
@@ -68,7 +66,8 @@ export default function LoginPage() {
         style={{
           backgroundImage: `url(https://res.cloudinary.com/bazeercloud/image/upload/v1736017187/logo_gqb8jl.png)`,
           backgroundPosition: 'center',
-         loading: 'lazy' 
+          loading: 'lazy',
+          
         }}
       ></div>
 
@@ -76,8 +75,8 @@ export default function LoginPage() {
       <div className="absolute inset-0 bg-black/60"></div>
 
       {/* Main Content */}
-      <div className="relative z-10 flex items-center justify-center w-full px-4 min-h-screen">
-        {/* Login Form Section */}
+      <div className="relative z-10 flex items-center justify-center w-full px-4 mt-16 min-h-screen"> {/* Add mt-16 to add space */}
+        {/* Register Form Section */}
         <div className="w-[60%] max-w-2xl bg-white/10 backdrop-blur-md border border-white/30 p-12 rounded-3xl shadow-lg">
           {/* User Icon */}
           <div className="flex justify-center mb-8">
@@ -86,8 +85,16 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Login Form */}
+          {/* Register Form */}
           <form className="space-y-6">
+            <div>
+              <input
+                type="text"
+                placeholder="FULL NAME"
+                className="w-full h-12 bg-gray-800/50 rounded-lg px-4 text-amber-400 placeholder-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400/50"
+              />
+            </div>
+
             <div>
               <input
                 type="email"
@@ -104,26 +111,28 @@ export default function LoginPage() {
               />
             </div>
 
+            <div>
+              <input
+                type="password"
+                placeholder="CONFIRM PASSWORD"
+                className="w-full h-12 bg-gray-800/50 rounded-lg px-4 text-amber-400 placeholder-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400/50"
+              />
+            </div>
+
             <div className="flex justify-between text-sm pt-2">
-              <Link
-                to="/register"
+             <Link
+               to=''
                 className="text-gray-500 hover:text-amber-400 transition-colors"
               >
-                CREATE NEW ACCOUNT
+                ALREADY HAVE AN ACCOUNT? LOGIN
               </Link>
-              <a
-                href="#"
-                className="text-gray-500 hover:text-amber-400 transition-colors"
-              >
-                FORGOT PASSWORD?
-              </a>
             </div>
 
             <button
               type="submit"
               className="w-full bg-[#4d4d33] hover:bg-[#5c5c3d] text-amber-400 font-bold py-3 rounded-lg transition-all mt-8"
             >
-              LOGIN
+              REGISTER
             </button>
           </form>
         </div>
