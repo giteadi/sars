@@ -1,4 +1,5 @@
 import { User, Mail, Lock, ShoppingCart } from 'lucide-react';
+import { Link } from 'react-router-dom';
 export default function RegisterPage() {
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
