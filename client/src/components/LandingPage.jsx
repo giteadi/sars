@@ -12,12 +12,13 @@ import FAQ from "../pages/FAQ";
 import Carosal from "./Carosal";
 import Reviews from "../pages/Reviews";
 import Footer from "../pages/Footer";
-
+import Navbar from "./NavBar";
 
 export default function LandingPage() {
   return (
+    
     <div className="w-full bg-black text-white">
-     
+     <Navbar/>
         <header className="container mx-auto px-4 py-4 flex justify-between items-center border-2 border-amber-400/20">
           <div className="w-12 h-12">
             <img

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { FaSearch, FaShoppingCart, FaUser } from 'react-icons/fa';
-
+import { Link } from 'react-router-dom';
 const Navbar = () => {
   // State to track scroll position
   const [isScrolled, setIsScrolled] = useState(false);
@@ -44,30 +44,30 @@ const Navbar = () => {
 
         {/* Navigation Links */}
         <div className="hidden md:flex items-center px-8 py-2 rounded-full">
-          <a
-            href="#"
+          <Link
+           to='/'
             className="mx-4 text-white hover:text-amber-400 transition-colors"
           >
             HOME
-          </a>
-          <a
-            href="#"
+         </Link>
+         <Link
+           to='/product'
             className="mx-4 text-white hover:text-amber-400 transition-colors"
           >
             PRODUCT
-          </a>
-          <a
-            href="#"
+         </Link>
+         {/* <Link
+           to='/'
             className="mx-4 text-white hover:text-amber-400 transition-colors"
           >
             HELPFUL TIPS
-          </a>
-          <a
-            href="#"
+         </Link> */}
+         <Link
+           to='/'
             className="mx-4 text-white hover:text-amber-400 transition-colors"
           >
             BLOG
-          </a>
+         </Link>
         </div>
 
         {/* Icons */}
