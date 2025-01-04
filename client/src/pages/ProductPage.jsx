@@ -52,10 +52,10 @@ const ProductPage = () => {
               className="bg-gradient-to-br from-white/50 via-yellow-100/30 to-yellow-200/40 backdrop-blur-md rounded-lg shadow-xl overflow-hidden transition-transform transform hover:scale-105"
             >
               <img
-                src={product.image}
-                alt={product.title}
-                className="w-full h-64 object-cover"
-              />
+  src={product.image}
+  alt={product.title}
+  className="w-full h-auto object-contain"
+/>
               <div className="p-4">
                 <h3 className="text-xl font-bold text-yellow-300 mb-2">
                   {product.title}
