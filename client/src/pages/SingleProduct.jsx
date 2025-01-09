@@ -2,10 +2,10 @@ import { ShoppingCart, Star, Info, Ruler, PenToolIcon as Tools } from 'lucide-re
 import { useState } from 'react'
 import Footer from './Footer'
 import Navbar from '../components/NavBar'
-
+import { useNavigate } from 'react-router-dom'
 export default function ProductPage() {
   const [selectedImage, setSelectedImage] = useState(0)
-
+const nav=useNavigate();
   const images = [
     '/placeholder.svg?height=400&width=200',
     '/placeholder.svg?height=400&width=200',
@@ -55,7 +55,9 @@ export default function ProductPage() {
               <button className="px-6 py-2 bg-yellow-500 text-black font-semibold rounded-md hover:bg-yellow-400 transition-colors">
                 Buy Now
               </button>
-              <button className="px-6 py-2 bg-gray-700 text-white font-semibold rounded-md hover:bg-gray-600 transition-colors">
+              <button className="px-6 py-2 bg-gray-700 text-white font-semibold rounded-md hover:bg-gray-600 transition-colors" onClick={()=>{
+                nav('/cart')
+              }}>
                 Add Cart
               </button>
             </div>
