@@ -2,17 +2,27 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { User, Search, ShoppingCart } from 'lucide-react';
 import { loginUser } from '../Redux/AuthSlice';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useDispatch();
+  const navigate = useNavigate(); // Initialize navigate
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (email && password) {
-      dispatch(loginUser({ email, password }));
+      // Dispatch the login action
+      dispatch(loginUser({ email, password }))
+        .then(() => {
+          // Navigate to the home page ('/')
+          navigate('/');
+        })
+        .catch((error) => {
+          // Handle error if login fails
+          alert('Login failed. Please try again.');
+        });
     } else {
       alert('Please enter both email and password.');
     }

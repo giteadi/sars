@@ -53,7 +53,6 @@ export const logoutUser = createAsyncThunk(
   'auth/logoutUser',
   async (_, { dispatch }) => {
     dispatch(clearUserData());
-    toast.success('Logout successful!');
   }
 );
 
