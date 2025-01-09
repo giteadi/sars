@@ -1,11 +1,19 @@
 import { useState, useEffect } from 'react';
 import { FaSearch, FaShoppingCart, FaUser, FaBars } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux'; // Import to access Redux state and dispatch actions
+import { logoutUser } from '../Redux/AuthSlice'; // Import the logout action
+import  toast  from 'react-hot-toast'; // To show toast notifications
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false); // state for dropdown visibility
+
+  // Access user data from Redux store
+  const user = useSelector((state) => state.auth.user); // Adjust path to the user state as needed
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated); // Check if the user is authenticated
+  const dispatch = useDispatch(); // For dispatching actions
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,6 +30,12 @@ const Navbar = () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
+  // Handle logout
+  const handleLogout = () => {
+    dispatch(logoutUser()); // Dispatch logout action
+    toast.success('Logout successful!'); // Show success toast
+  };
 
   return (
     <nav
@@ -84,31 +98,51 @@ const Navbar = () => {
           </button>
 
           {/* User Icon with Dropdown */}
-          <div className="relative">
+          <div className="relative flex items-center space-x-2">
             <button
               onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)} // toggle dropdown
               className="p-2"
             >
               <div className="w-8 h-8 rounded-full bg-amber-400/20 flex items-center justify-center shadow-[0_0_15px_rgba(251,191,36,0.3)]">
                 <FaUser className="w-5 h-5 text-amber-400"/>
+               
               </div>
             </button>
-
+            <p>{user ? user.name : 'Guest'}</p>
             {/* Glassmorphism Dropdown Menu */}
             {isUserDropdownOpen && (
-              <div className="absolute right-0 mt-2 bg-white/10 backdrop-blur-md border border-white/30 rounded-md shadow-lg w-40 py-2">
-                <Link
-                  to="/login"
-                  className="block px-4 py-2 text-sm text-white hover:bg-white/10 rounded-md"
-                >
-                  Login
-                </Link>
-                <Link
-                  to="/register"
-                  className="block px-4 py-2 text-sm text-white hover:bg-white/10 rounded-md"
-                >
-                  Register
-                </Link>
+              <div className="absolute top-full right-0 mt-2 bg-white/10 backdrop-blur-md border border-white/30 rounded-md shadow-lg w-40 py-2 z-20">
+                {isAuthenticated ? (
+                  <>
+                    <Link
+                      to="/profile"
+                      className="block px-4 py-2 text-sm text-white hover:bg-white/10 rounded-md"
+                    >
+                      Profile
+                    </Link>
+                    <button
+                      onClick={handleLogout} // Trigger logout
+                      className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-white/10 rounded-md"
+                    >
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      to="/login"
+                      className="block px-4 py-2 text-sm text-white hover:bg-white/10 rounded-md"
+                    >
+                      Login
+                    </Link>
+                    <Link
+                      to="/register"
+                      className="block px-4 py-2 text-sm text-white hover:bg-white/10 rounded-md"
+                    >
+                      Register
+                    </Link>
+                  </>
+                )}
               </div>
             )}
           </div>

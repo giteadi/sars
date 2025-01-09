@@ -1,8 +1,23 @@
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { User, Search, ShoppingCart } from 'lucide-react';
-
-import { Link } from 'react-router-dom';  // Correct import
+import { loginUser } from '../Redux/AuthSlice';
+import { Link } from 'react-router-dom';
 
 export default function LoginPage() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const dispatch = useDispatch();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (email && password) {
+      dispatch(loginUser({ email, password }));
+    } else {
+      alert('Please enter both email and password.');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
       {/* Navigation Bar */}
@@ -11,7 +26,7 @@ export default function LoginPage() {
           {/* Logo */}
           <div className="w-16 h-16">
             <img
-              src='https://res.cloudinary.com/bazeercloud/image/upload/v1736017187/logo_gqb8jl.png'
+              src="https://res.cloudinary.com/bazeercloud/image/upload/v1736017187/logo_gqb8jl.png"
               alt="Logo"
               className="w-full h-full object-contain"
             />
@@ -68,7 +83,7 @@ export default function LoginPage() {
         style={{
           backgroundImage: `url(https://res.cloudinary.com/bazeercloud/image/upload/v1736017187/logo_gqb8jl.png)`,
           backgroundPosition: 'center',
-         loading: 'lazy' 
+          loading: 'lazy',
         }}
       ></div>
 
@@ -87,11 +102,13 @@ export default function LoginPage() {
           </div>
 
           {/* Login Form */}
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <input
                 type="email"
                 placeholder="EMAIL ID"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full h-12 bg-gray-800/50 rounded-lg px-4 text-amber-400 placeholder-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400/50"
               />
             </div>
@@ -100,6 +117,8 @@ export default function LoginPage() {
               <input
                 type="password"
                 placeholder="PASSWORD"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="w-full h-12 bg-gray-800/50 rounded-lg px-4 text-amber-400 placeholder-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400/50"
               />
             </div>

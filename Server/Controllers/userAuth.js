@@ -22,10 +22,13 @@ const sendOtp = async (email) => {
 // Registration Endpoint
 const register = async (req, res) => {
     try {
-        const { name, email, password, confirmPassword, role = "user" } = req.body;
+        // Log the request body for debugging
+        // console.log(req.body);
+
+        const { fullName, email, password, confirmPassword, role = "user" } = req.body;
 
         // Check for required fields
-        if (!name || !email || !password || !confirmPassword) {
+        if (!fullName || !email || !password || !confirmPassword) {
             return res.status(400).json({ error: "All fields are required" });
         }
 
@@ -56,7 +59,7 @@ const register = async (req, res) => {
         // Handle admin role with OTP logic
         if (role === "admin") {
             const { otpExpiryTime } = await sendOtp(email);
-            tempUserStore.set(email, { name, password, role });
+            tempUserStore.set(email, { fullName, password, role });
             return res.status(200).json({
                 message: "OTP sent to your email. Please verify to complete registration.",
                 otpExpiryTime,
@@ -64,7 +67,7 @@ const register = async (req, res) => {
         }
 
         // Save user for non-admin roles
-        await saveUser(name, email, password, role, res);
+        await saveUser(fullName, email, password, role, res);
     } catch (error) {
         console.error("Error in registration:", error.message);
         res.status(500).json({
@@ -74,6 +77,7 @@ const register = async (req, res) => {
         });
     }
 };
+
 
 // Helper function to save user to the database
 const saveUser = async (name, email, password, role, res) => {

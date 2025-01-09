@@ -4,13 +4,13 @@ const app = express();
 require("dotenv").config();
 const fileUpload = require('express-fileupload');
 const userRoutes = require("./Routes/userRoutes"); 
-const adminRoutes = require("./Routes/adminRoute"); 
-const propertyRoutes = require("./Routes/propertyRoute");
-const testimonialRoutes=require("./Routes/testimonialRoute");
+// const adminRoutes = require("./Routes/adminRoute"); 
+// const propertyRoutes = require("./Routes/propertyRoute");
+// const testimonialRoutes=require("./Routes/testimonialRoute");
 const cloudinaryConnect = require("./Config/cloudinary");
-const chekRoutes = require('./Routes/chekRoutes');
-const reserveRoutes = require('./Routes/reservationRoutes');
-const paymentRoutes = require('./Routes/paymentRoutes');
+// const chekRoutes = require('./Routes/chekRoutes');
+// const reserveRoutes = require('./Routes/reservationRoutes');
+// const paymentRoutes = require('./Routes/paymentRoutes');
 cloudinaryConnect();
 
 // Middlewares
@@ -23,12 +23,12 @@ app.use(fileUpload({
 }));
 app.use(express.urlencoded({ extended: true }));
 app.use("/api/v1/user", userRoutes);
-app.use("/api/v1/admin", adminRoutes);
-app.use("/api/v1/property", propertyRoutes);
-app.use("/api/v1/testimonial",testimonialRoutes);
-app.use("/api/v1/check", chekRoutes);
-app.use("/api/v1/reservation", reserveRoutes);
-app.use("/api/v1/payments",paymentRoutes);
+// app.use("/api/v1/admin", adminRoutes);
+// app.use("/api/v1/property", propertyRoutes);
+// app.use("/api/v1/testimonial",testimonialRoutes);
+// app.use("/api/v1/check", chekRoutes);
+// app.use("/api/v1/reservation", reserveRoutes);
+// app.use("/api/v1/payments",paymentRoutes);
 
 
 const PORT = process.env.PORT || 3000;
