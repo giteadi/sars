@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false); // state for dropdown visibility
 
   useEffect(() => {
     const handleScroll = () => {
@@ -81,11 +82,36 @@ const Navbar = () => {
           <button className="p-2 hover:text-amber-400 transition-colors">
             <FaShoppingCart className="w-6 h-6" />
           </button>
-          <button className="p-2">
-            <div className="w-8 h-8 rounded-full bg-amber-400/20 flex items-center justify-center shadow-[0_0_15px_rgba(251,191,36,0.3)]">
-              <FaUser className="w-5 h-5 text-amber-400" />
-            </div>
-          </button>
+
+          {/* User Icon with Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)} // toggle dropdown
+              className="p-2"
+            >
+              <div className="w-8 h-8 rounded-full bg-amber-400/20 flex items-center justify-center shadow-[0_0_15px_rgba(251,191,36,0.3)]">
+                <FaUser className="w-5 h-5 text-amber-400"/>
+              </div>
+            </button>
+
+            {/* Glassmorphism Dropdown Menu */}
+            {isUserDropdownOpen && (
+              <div className="absolute right-0 mt-2 bg-white/10 backdrop-blur-md border border-white/30 rounded-md shadow-lg w-40 py-2">
+                <Link
+                  to="/login"
+                  className="block px-4 py-2 text-sm text-white hover:bg-white/10 rounded-md"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/register"
+                  className="block px-4 py-2 text-sm text-white hover:bg-white/10 rounded-md"
+                >
+                  Register
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </nav>
