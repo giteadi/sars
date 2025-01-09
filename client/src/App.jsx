@@ -4,6 +4,7 @@ import LoginPage from './pages/login';
 import RegisterPage from './pages/Register';
 import ProductPage from './pages/ProductPage';
 import BlogPage from './pages/Blogs';
+import SingleProduct from './pages/SingleProduct';
 function App() {
   return (
     <div>
@@ -13,6 +14,7 @@ function App() {
         <Route path='/register' element={<RegisterPage/>}/>
         <Route path='/product' element={<ProductPage/>}/>
         <Route path='/blogs' element={<BlogPage/>}/>
+        <Route path='/singleProduct' element={<SingleProduct/>}/>
       </Routes>
     </div>
   );
