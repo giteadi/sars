@@ -19,11 +19,9 @@ exports.createOrder = (req, res) => {
     currency,
     receipt,
     user_id,
-    property_id,
-    start_date,
-    end_date,
-    guest,  // Add guest to the request body
+    product_id, 
   } = req.body;
+
   // Validate request body
   if (!amount || typeof amount !== "number" || amount <= 0) {
     return res.status(400).json({ msg: "Invalid amount" });
@@ -34,30 +32,37 @@ exports.createOrder = (req, res) => {
   if (!receipt || typeof receipt !== "string") {
     return res.status(400).json({ msg: "Invalid receipt ID" });
   }
-  if (!start_date || !end_date) {
-    return res.status(400).json({ msg: "Start and end dates are required" });
-  }
-  if (!guest || typeof guest !== "number" || guest <= 0) {  // Validate guest count
-    return res.status(400).json({ msg: "Invalid guest count" });
-  }
 
-  const options = { amount: amount * 100, currency, receipt };
+  // Fetch product details to get the total price for the user
+  const getProductQuery = "SELECT price FROM products WHERE id = ?";
+  db.query(getProductQuery, [product_id], (err, results) => {
+    if (err) return res.status(500).json({ msg: "Error fetching product details" });
 
-  razorpay.orders.create(options, (err, order) => {
-    if (err) {
-      console.error("Error in createOrder:", err.message);
-      return res.status(500).json({ msg: "Order creation failed" });
+    if (results.length === 0) {
+      return res.status(404).json({ msg: "Product not found" });
     }
 
-    // Return Razorpay order details to front-end
-    res.status(200).json(order);
+    const productPrice = results[0].price;
+
+    // Create Razorpay order options
+    const options = { amount: productPrice * 100, currency, receipt };
+
+    razorpay.orders.create(options, (err, order) => {
+      if (err) {
+        console.error("Error in createOrder:", err.message);
+        return res.status(500).json({ msg: "Order creation failed" });
+      }
+
+      // Return Razorpay order details to front-end
+      res.status(200).json(order);
+    });
   });
 };
 
 // Validate payment
-
 exports.validatePayment = (req, res) => {
-  const { razorpay_order_id, razorpay_payment_id, razorpay_signature, amount, currency, user_id, property_id, start_date, end_date, guest } = req.body;
+  const { razorpay_order_id, razorpay_payment_id, razorpay_signature, amount, currency, user_id, product_id } = req.body;
+
   // Validate input
   if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
     return res.status(400).json({ msg: "Invalid payment validation parameters" });
@@ -74,22 +79,18 @@ exports.validatePayment = (req, res) => {
 
     // Payment is valid, proceed to insert the reservation
     const reservationQuery = `
-      INSERT INTO reservations 
-      (property_id, user_id, start_date, end_date, total_price, payment_status, 
-      payment_method, payment_id, transaction_id, guest, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+      INSERT INTO reservation 
+      (product_id, user_id, total_price, payment_status, payment_method, payment_id, transaction_id, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
     `;
     const reservationValues = [
-      property_id,
+      product_id,
       user_id,
-      start_date,
-      end_date,
-      amount/100,
-      "success",  // Payment status is success after validation
-      "Razorpay", // Payment method
-      razorpay_order_id,  // payment_id (Razorpay order ID)
-      razorpay_payment_id,  // transaction_id (Razorpay payment ID)
-      guest,  // Add guest count to reservation
+      amount / 100, 
+      "success", 
+      "Razorpay", 
+      razorpay_order_id, 
+      razorpay_payment_id, 
     ];
 
     db.query(reservationQuery, reservationValues, (err, result) => {

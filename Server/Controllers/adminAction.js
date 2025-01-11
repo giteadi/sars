@@ -1,105 +1,78 @@
 const { db } = require("../Config/db");
-const addProperty = async (req, res) => {
+
+// Add Product (Wood Gate)
+const addProduct = async (req, res) => {
     try {
-        const { title, description, imageUrl, price, location, bedrooms, bathrooms, amenities } = req.body;
+        const { title, description, price, dimension, services } = req.body;
 
-        if (!title || !description || !imageUrl || !price || !location || !bedrooms || !bathrooms) {
-            return res.status(400).json({ error: "All fields are required" });
+        // Ensure required fields and the image are present
+        if (!title || !description || !price || !dimension || !services || !req.file) {
+            return res.status(400).json({ error: "All fields and image are required" });
         }
 
-        if (isNaN(price) || price <= 0) {
-            return res.status(400).json({ error: "Invalid price" });
-        }
+        // Get the image URL from the uploaded file
+        const imageUrl = req.file.path; // Assuming the file upload middleware stores the image URL in req.file.path
 
-        if (amenities && !Array.isArray(amenities)) {
-            return res.status(400).json({ error: "Amenities should be an array" });
-        }
+        // SQL query to insert the product (wood gate) into the `products` table
+        const productQuery = `
+            INSERT INTO products (title, description, image, price, dimension, services, image_url) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        `;
+        const productValues = [title, description, req.file.filename, price, dimension, services, imageUrl];
 
-        const propertyQuery = "INSERT INTO property (title, description, image_url, price, location, bedrooms, bathrooms) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        const propertyValues = [title, description, imageUrl, price, location, bedrooms, bathrooms];
-
-        const propertyId = await new Promise((resolve, reject) => {
-            db.query(propertyQuery, propertyValues, (err, result) => {
+        const productId = await new Promise((resolve, reject) => {
+            db.query(productQuery, productValues, (err, result) => {
                 if (err) return reject(err);
                 resolve(result.insertId);
             });
         });
 
-        if (amenities) {
-            const amenityPromises = amenities.map(async (amenity) => {
-                const existingAmenityQuery = "SELECT id FROM amenities WHERE name = ?";
-                const existingAmenity = await new Promise((resolve, reject) => {
-                    db.query(existingAmenityQuery, [amenity], (err, result) => {
-                        if (err) return reject(err);
-                        resolve(result);
-                    });
-                });
-
-                let amenityId;
-                if (existingAmenity.length > 0) {
-                    amenityId = existingAmenity[0].id;
-                } else {
-                    const insertAmenityQuery = "INSERT INTO amenities (name) VALUES (?)";
-                    amenityId = await new Promise((resolve, reject) => {
-                        db.query(insertAmenityQuery, [amenity], (err, result) => {
-                            if (err) return reject(err);
-                            resolve(result.insertId);
-                        });
-                    });
-                }
-
-                const propertyAmenityQuery = "INSERT INTO property_amenities (property_id, amenity_id) VALUES (?, ?)";
-                await new Promise((resolve, reject) => {
-                    db.query(propertyAmenityQuery, [propertyId, amenityId], (err) => {
-                        if (err) return reject(err);
-                        resolve();
-                    });
-                });
-            });
-
-            await Promise.all(amenityPromises);
-        }
-
-        res.status(201).json({ message: "Property added successfully", propertyId });
+        res.status(201).json({ message: "Product added successfully", productId });
     } catch (error) {
-        console.error("Error in adding property:", error.message);
-        res.status(500).json({ success: false, message: "Error in adding property", error: error.message });
+        console.error("Error in adding product:", error.message);
+        res.status(500).json({ success: false, message: "Error in adding product", error: error.message });
     }
 };
 
-// Get Properties
-const getProperties = async (req, res) => {
+// Get Products (Wood Gates)
+const getProducts = async (req, res) => {
     try {
-        const propertyQuery = `
-            SELECT p.*, GROUP_CONCAT(a.name) AS amenities
-            FROM property p
-            LEFT JOIN property_amenities pa ON p.id = pa.property_id
-            LEFT JOIN amenities a ON pa.amenity_id = a.id
-            GROUP BY p.id
+        const productQuery = `
+            SELECT * FROM products
         `;
         
-        const properties = await new Promise((resolve, reject) => {
-            db.query(propertyQuery, (err, result) => {
+        const products = await new Promise((resolve, reject) => {
+            db.query(productQuery, (err, result) => {
                 if (err) return reject(err);
                 resolve(result);
             });
         });
 
-        res.status(200).json({ properties });
+        res.status(200).json({ products });
     } catch (error) {
-        console.error("Error in fetching properties:", error.message);
-        res.status(500).json({ success: false, message: "Error in fetching properties", error: error.message });
+        console.error("Error in fetching products:", error.message);
+        res.status(500).json({ success: false, message: "Error in fetching products", error: error.message });
     }
 };
 
-// Update Property
-const updateProperty = async (req, res) => {
+// Update Product (Wood Gate)
+const updateProduct = async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, description, imageUrl, price, location, bedrooms, bathrooms, amenities } = req.body;
+        const { title, description, price, dimension, services } = req.body;
 
-        const updateQuery = "UPDATE property SET title = ?, description = ?, image_url = ?, price = ?, location = ?, bedrooms = ?, bathrooms = ? WHERE id = ?";
-        const updateValues = [title, description, imageUrl, price, location, bedrooms, bathrooms, id];
+        let imageUrl = null;
+        if (req.file) {
+            imageUrl = req.file.path; // If new image is uploaded, get the image URL
+        }
+
+        // SQL query to update the product (wood gate) in the `products` table
+        const updateQuery = `
+            UPDATE products 
+            SET title = ?, description = ?, price = ?, dimension = ?, services = ?, image_url = ?
+            WHERE id = ?
+        `;
+        const updateValues = [title, description, price, dimension, services, imageUrl, id];
 
         await new Promise((resolve, reject) => {
             db.query(updateQuery, updateValues, (err) => {
@@ -108,62 +81,20 @@ const updateProperty = async (req, res) => {
             });
         });
 
-        if (amenities) {
-            const deleteAmenitiesQuery = "DELETE FROM property_amenities WHERE property_id = ?";
-            await new Promise((resolve, reject) => {
-                db.query(deleteAmenitiesQuery, [id], (err) => {
-                    if (err) return reject(err);
-                    resolve();
-                });
-            });
-
-            const amenityPromises = amenities.map(async (amenity) => {
-                const existingAmenityQuery = "SELECT id FROM amenities WHERE name = ?";
-                const existingAmenity = await new Promise((resolve, reject) => {
-                    db.query(existingAmenityQuery, [amenity], (err, result) => {
-                        if (err) return reject(err);
-                        resolve(result);
-                    });
-                });
-
-                let amenityId;
-                if (existingAmenity.length > 0) {
-                    amenityId = existingAmenity[0].id;
-                } else {
-                    const insertAmenityQuery = "INSERT INTO amenities (name) VALUES (?)";
-                    amenityId = await new Promise((resolve, reject) => {
-                        db.query(insertAmenityQuery, [amenity], (err, result) => {
-                            if (err) return reject(err);
-                            resolve(result.insertId);
-                        });
-                    });
-                }
-
-                const propertyAmenityQuery = "INSERT INTO property_amenities (property_id, amenity_id) VALUES (?, ?)";
-                await new Promise((resolve, reject) => {
-                    db.query(propertyAmenityQuery, [id, amenityId], (err) => {
-                        if (err) return reject(err);
-                        resolve();
-                    });
-                });
-            });
-
-            await Promise.all(amenityPromises);
-        }
-
-        res.status(200).json({ message: "Property updated successfully" });
+        res.status(200).json({ message: "Product updated successfully" });
     } catch (error) {
-        console.error("Error in updating property:", error.message);
-        res.status(500).json({ success: false, message: "Error in updating property", error: error.message });
+        console.error("Error in updating product:", error.message);
+        res.status(500).json({ success: false, message: "Error in updating product", error: error.message });
     }
 };
 
-// Delete Property
-const deleteProperty = async (req, res) => {
+// Delete Product (Wood Gate) from `products` Table
+const deleteProduct = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const deleteQuery = "DELETE FROM property WHERE id = ?";
+        // SQL query to delete the product from the `products` table
+        const deleteQuery = "DELETE FROM products WHERE id = ?";
         await new Promise((resolve, reject) => {
             db.query(deleteQuery, [id], (err) => {
                 if (err) return reject(err);
@@ -171,12 +102,11 @@ const deleteProperty = async (req, res) => {
             });
         });
 
-        res.status(200).json({ message: "Property deleted successfully" });
+        res.status(200).json({ message: "Product deleted successfully" });
     } catch (error) {
-        console.error("Error in deleting property:", error.message);
-        res.status(500).json({ success: false, message: "Error in deleting property", error: error.message });
+        console.error("Error in deleting product:", error.message);
+        res.status(500).json({ success: false, message: "Error in deleting product", error: error.message });
     }
 };
 
-module.exports = { addProperty, getProperties, updateProperty, deleteProperty };
-
+module.exports = { addProduct, getProducts, updateProduct, deleteProduct };

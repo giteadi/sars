@@ -4,7 +4,7 @@ const app = express();
 require("dotenv").config();
 const fileUpload = require('express-fileupload');
 const userRoutes = require("./Routes/userRoutes"); 
-// const adminRoutes = require("./Routes/adminRoute"); 
+const adminRoutes = require("./Routes/adminRoute"); 
 // const propertyRoutes = require("./Routes/propertyRoute");
 // const testimonialRoutes=require("./Routes/testimonialRoute");
 const cloudinaryConnect = require("./Config/cloudinary");
@@ -23,7 +23,7 @@ app.use(fileUpload({
 }));
 app.use(express.urlencoded({ extended: true }));
 app.use("/api/v1/user", userRoutes);
-// app.use("/api/v1/admin", adminRoutes);
+app.use("/api/v1/admin", adminRoutes);
 // app.use("/api/v1/property", propertyRoutes);
 // app.use("/api/v1/testimonial",testimonialRoutes);
 // app.use("/api/v1/check", chekRoutes);
