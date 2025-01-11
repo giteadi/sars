@@ -1,24 +1,19 @@
 const { db } = require("../Config/db");
 
-// Add Product (Wood Gate)
+
 const addProduct = async (req, res) => {
     try {
-        const { title, description, price, dimension, services } = req.body;
+        const { title, description, price, dimension, services, imageUrl } = req.body;
 
-        // Ensure required fields and the image are present
-        if (!title || !description || !price || !dimension || !services || !req.file) {
-            return res.status(400).json({ error: "All fields and image are required" });
+        if (!title || !description || !price || !dimension || !services || !imageUrl) {
+            return res.status(400).json({ error: "All fields including image are required" });
         }
 
-        // Get the image URL from the uploaded file
-        const imageUrl = req.file.path; // Assuming the file upload middleware stores the image URL in req.file.path
-
-        // SQL query to insert the product (wood gate) into the `products` table
         const productQuery = `
             INSERT INTO products (title, description, image, price, dimension, services, image_url) 
             VALUES (?, ?, ?, ?, ?, ?, ?)
         `;
-        const productValues = [title, description, req.file.filename, price, dimension, services, imageUrl];
+        const productValues = [title, description, imageUrl.split('/').pop(), price, dimension, services, imageUrl];
 
         const productId = await new Promise((resolve, reject) => {
             db.query(productQuery, productValues, (err, result) => {
@@ -33,6 +28,8 @@ const addProduct = async (req, res) => {
         res.status(500).json({ success: false, message: "Error in adding product", error: error.message });
     }
 };
+
+
 
 // Get Products (Wood Gates)
 const getProducts = async (req, res) => {
