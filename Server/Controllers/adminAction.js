@@ -3,17 +3,19 @@ const { db } = require("../Config/db");
 
 const addProduct = async (req, res) => {
     try {
-        const { title, description, price, dimension, services, imageUrl } = req.body;
+        const { title, description, price, dimension, services, imageUrls } = req.body;
 
-        if (!title || !description || !price || !dimension || !services || !imageUrl) {
-            return res.status(400).json({ error: "All fields including image are required" });
+        // Validate input fields
+        if (!title || !description || !price || !dimension || !services || !imageUrls || !Array.isArray(imageUrls)) {
+            return res.status(400).json({ error: "All fields including images are required, and images must be an array" });
         }
 
+        // Insert the product into the `products` table
         const productQuery = `
-            INSERT INTO products (title, description, image, price, dimension, services, image_url) 
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO products (title, description, price, dimension, services)
+            VALUES (?, ?, ?, ?, ?)
         `;
-        const productValues = [title, description, imageUrl.split('/').pop(), price, dimension, services, imageUrl];
+        const productValues = [title, description, price, dimension, services];
 
         const productId = await new Promise((resolve, reject) => {
             db.query(productQuery, productValues, (err, result) => {
@@ -22,16 +24,27 @@ const addProduct = async (req, res) => {
             });
         });
 
-        res.status(201).json({ message: "Product added successfully", productId });
+        // Insert multiple images into the `product_images` table
+        const imageInsertQuery = `
+            INSERT INTO product_images (product_id, image_url)
+            VALUES (?, ?)
+        `;
+        for (const imageUrl of imageUrls) {
+            await new Promise((resolve, reject) => {
+                db.query(imageInsertQuery, [productId, imageUrl], (err) => {
+                    if (err) return reject(err);
+                    resolve();
+                });
+            });
+        }
+
+        res.status(201).json({ message: "Product and images added successfully", productId });
     } catch (error) {
         console.error("Error in adding product:", error.message);
         res.status(500).json({ success: false, message: "Error in adding product", error: error.message });
     }
 };
 
-
-
-// Get Products (Wood Gates)
 const getProducts = async (req, res) => {
     try {
         const productQuery = `
