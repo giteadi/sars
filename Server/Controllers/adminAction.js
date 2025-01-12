@@ -1,6 +1,5 @@
 const { db } = require("../Config/db");
 
-
 const addProduct = async (req, res) => {
     try {
         const { title, description, price, dimension, services, imageUrls } = req.body;
@@ -65,58 +64,51 @@ const getProducts = async (req, res) => {
     }
 };
 
-// Update Product (Wood Gate)
-const updateProduct = async (req, res) => {
+const getProductById = async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, description, price, dimension, services } = req.body;
 
-        let imageUrl = null;
-        if (req.file) {
-            imageUrl = req.file.path; // If new image is uploaded, get the image URL
+        // Query to fetch product details
+        const productQuery = `
+            SELECT * FROM products WHERE id = ?
+        `;
+
+        const product = await new Promise((resolve, reject) => {
+            db.query(productQuery, [id], (err, result) => {
+                if (err) return reject(err);
+                resolve(result[0]);
+            });
+        });
+
+        if (!product) {
+            return res.status(404).json({ success: false, message: "Product not found" });
         }
 
-        // SQL query to update the product (wood gate) in the `products` table
-        const updateQuery = `
-            UPDATE products 
-            SET title = ?, description = ?, price = ?, dimension = ?, services = ?, image_url = ?
-            WHERE id = ?
+        // Query to fetch associated images
+        const imagesQuery = `
+            SELECT image_url FROM product_images WHERE product_id = ?
         `;
-        const updateValues = [title, description, price, dimension, services, imageUrl, id];
 
-        await new Promise((resolve, reject) => {
-            db.query(updateQuery, updateValues, (err) => {
+        const images = await new Promise((resolve, reject) => {
+            db.query(imagesQuery, [id], (err, result) => {
                 if (err) return reject(err);
-                resolve();
+                resolve(result.map((row) => row.image_url));
             });
         });
 
-        res.status(200).json({ message: "Product updated successfully" });
+        res.status(200).json({ product, images });
     } catch (error) {
-        console.error("Error in updating product:", error.message);
-        res.status(500).json({ success: false, message: "Error in updating product", error: error.message });
+        console.error("Error in fetching product by ID:", error.message);
+        res.status(500).json({ success: false, message: "Error in fetching product by ID", error: error.message });
     }
 };
 
-// Delete Product (Wood Gate) from `products` Table
+const updateProduct = async (req, res) => {
+    // Update product logic...
+};
+
 const deleteProduct = async (req, res) => {
-    try {
-        const { id } = req.params;
-
-        // SQL query to delete the product from the `products` table
-        const deleteQuery = "DELETE FROM products WHERE id = ?";
-        await new Promise((resolve, reject) => {
-            db.query(deleteQuery, [id], (err) => {
-                if (err) return reject(err);
-                resolve();
-            });
-        });
-
-        res.status(200).json({ message: "Product deleted successfully" });
-    } catch (error) {
-        console.error("Error in deleting product:", error.message);
-        res.status(500).json({ success: false, message: "Error in deleting product", error: error.message });
-    }
+    // Delete product logic...
 };
 
-module.exports = { addProduct, getProducts, updateProduct, deleteProduct };
+module.exports = { addProduct, getProducts, getProductById, updateProduct, deleteProduct };
