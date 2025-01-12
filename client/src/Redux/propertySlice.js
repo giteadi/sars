@@ -8,7 +8,7 @@ export const fetchProducts = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get('http://localhost:4000/api/v1/admin/getProducts');
-      console.log('API Response:', response.data); 
+      console.log('Fetched Products:', response.data); // Log API Response
       return response.data;
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -23,6 +23,7 @@ export const fetchProductById = createAsyncThunk(
   async (productId, { rejectWithValue }) => {
     try {
       const response = await axios.get(`http://localhost:4000/api/v1/admin/getProductById/${productId}`);
+      console.log('Fetched Product by ID:', response.data); // Log API Response
       return response.data;
     } catch (error) {
       console.error('Error fetching product by ID:', error);
@@ -36,17 +37,21 @@ export const createProduct = createAsyncThunk(
   'product/createProduct',
   async (productData, { rejectWithValue }) => {
     try {
-      const formData = new FormData();
-      formData.append('title', productData.title);
-      formData.append('description', productData.description);
-      formData.append('price', productData.price);
-      formData.append('dimension', productData.dimension);
-      formData.append('services', productData.services);
+      const { title, description, price, dimension, services, imageFiles } = productData;
+      console.log('Product Data:', { title, description, price, dimension, services }); // Log Product Data
       
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('description', description);
+      formData.append('price', price);
+      formData.append('dimension', dimension);
+      formData.append('services', services);
+
       // Handle multiple images
-      if (productData.imageFiles) {
-        productData.imageFiles.forEach(file => {
+      if (imageFiles && imageFiles.length > 0) {
+        imageFiles.forEach(file => {
           formData.append('imageFile', file);
+          console.log('Appending Image:', file.name); // Log each image file
         });
       }
 
@@ -55,6 +60,7 @@ export const createProduct = createAsyncThunk(
         formData,
         { headers: { 'Content-Type': 'multipart/form-data' } }
       );
+      console.log('Product Created:', response.data); // Log creation success
       return response.data;
     } catch (error) {
       console.error('Error creating product:', error);
@@ -68,24 +74,29 @@ export const updateProduct = createAsyncThunk(
   'product/updateProduct',
   async (productData, { rejectWithValue }) => {
     try {
+      const { id, title, description, price, dimension, services, imageFiles } = productData;
+      console.log('Update Product Data:', { id, title, description, price, dimension, services }); // Log Product Data
+
       const formData = new FormData();
-      formData.append('title', productData.title);
-      formData.append('description', productData.description);
-      formData.append('price', productData.price);
-      formData.append('dimension', productData.dimension);
-      formData.append('services', productData.services);
-      
-      if (productData.imageFiles?.length > 0) {
-        productData.imageFiles.forEach(file => {
+      formData.append('title', title);
+      formData.append('description', description);
+      formData.append('price', price);
+      formData.append('dimension', dimension);
+      formData.append('services', services);
+
+      if (imageFiles?.length > 0) {
+        imageFiles.forEach(file => {
           formData.append('imageFile', file);
+          console.log('Appending Updated Image:', file.name); // Log each updated image file
         });
       }
 
       const response = await axios.put(
-        `http://localhost:4000/api/v1/admin/updateProductById/${productData.id}`,
+        `http://localhost:4000/api/v1/admin/updateProductById/${id}`,
         formData,
         { headers: { 'Content-Type': 'multipart/form-data' } }
       );
+      console.log('Product Updated:', response.data); // Log update success
       return response.data;
     } catch (error) {
       console.error('Error updating product:', error);
@@ -102,6 +113,7 @@ export const deleteProduct = createAsyncThunk(
       const response = await axios.delete(
         `http://localhost:4000/api/v1/admin/deleteProductById/${productId}`
       );
+      console.log('Product Deleted:', response.data); // Log deletion success
       return { id: productId, ...response.data };
     } catch (error) {
       console.error('Error deleting product:', error);
@@ -142,7 +154,7 @@ const productSlice = createSlice({
         state.loading = false;
         state.products = action.payload.products || [];
         state.error = null;
-        console.log('Products in state:', state.products); // Debug log
+        console.log('Products in State:', state.products); // Debug log for state update
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.loading = false;
@@ -150,14 +162,14 @@ const productSlice = createSlice({
         toast.error(state.error);
       })
       
-      // Fetch single product by ID
+      // Fetch a single product by ID
       .addCase(fetchProductById.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(fetchProductById.fulfilled, (state, action) => {
         state.loading = false;
-        state.product = action.payload.product;
+        state.product = action.payload;
         state.error = null;
       })
       .addCase(fetchProductById.rejected, (state, action) => {
