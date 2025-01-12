@@ -49,7 +49,8 @@ const getProducts = async (req, res) => {
         const productQuery = `
             SELECT * FROM products
         `;
-        
+
+        // Fetch all products
         const products = await new Promise((resolve, reject) => {
             db.query(productQuery, (err, result) => {
                 if (err) return reject(err);
@@ -57,7 +58,26 @@ const getProducts = async (req, res) => {
             });
         });
 
-        res.status(200).json({ products });
+        // For each product, fetch associated images
+        const productsWithImages = await Promise.all(products.map(async (product) => {
+            const imagesQuery = `
+                SELECT image_url FROM product_images WHERE product_id = ?
+            `;
+
+            const images = await new Promise((resolve, reject) => {
+                db.query(imagesQuery, [product.id], (err, result) => {
+                    if (err) return reject(err);
+                    resolve(result.map((row) => row.image_url));
+                });
+            });
+
+            return {
+                ...product,
+                images
+            };
+        }));
+
+        res.status(200).json({ products: productsWithImages });
     } catch (error) {
         console.error("Error in fetching products:", error.message);
         res.status(500).json({ success: false, message: "Error in fetching products", error: error.message });
