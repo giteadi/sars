@@ -122,25 +122,22 @@ const ProductPage = () => {
             >
               {/* Image Gallery */}
               <div className="relative">
-                <div className="flex overflow-x-auto space-x-4 p-4">
-                  {product.images && product.images.length > 0 ? (
-                    product.images.map((image, index) => (
-                      <img
-                        key={index}
-                        src={image}
-                        alt={`${product.title} - ${index + 1}`}
-                        className="w-full h-48 object-contain rounded-lg shadow-md" // Adjusted to avoid cutting off
-                      />
-                    ))
-                  ) : (
-                    <img
-                      src={defaultImage}
-                      alt={product.title}
-                      className="w-full h-48 object-contain rounded-lg shadow-md" // Adjusted to avoid cutting off
-                    />
-                  )}
-                </div>
-              </div>
+  <div className="flex p-4">
+    {product.images && product.images.length > 0 ? (
+      <img
+        src={product.images[0]} // Display the first image
+        alt={`${product.title} - 1`}
+        className="w-full h-48 object-contain rounded-lg shadow-md" // Adjusted to avoid cutting off
+      />
+    ) : (
+      <img
+        src={defaultImage}
+        alt={product.title}
+        className="w-full h-48 object-contain rounded-lg shadow-md" // Adjusted to avoid cutting off
+      />
+    )}
+  </div>
+</div>
 
               <div className="p-4">
                 <h3 className="text-xl font-bold text-yellow-300 mb-2">
