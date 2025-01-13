@@ -13,10 +13,10 @@ export default function SingleProduct() {
   const navigate = useNavigate();
   const { product, loading, error } = useSelector((state) => state.property);
   const [selectedImage, setSelectedImage] = useState(0);
-console.log(product)
+  
   useEffect(() => {
     if (id) {
-      dispatch(fetchProductById(id)); // Dispatch action to fetch product by ID
+      dispatch(fetchProductById(id));
     }
   }, [dispatch, id]);
 
@@ -32,7 +32,6 @@ console.log(product)
     return <div className="min-h-screen bg-black text-white flex items-center justify-center">Product not found</div>;
   }
 
-  // Ensure `product` is not null/undefined
   const { title, price, description, dimension, services, images } = product || {};
 
   return (
@@ -43,15 +42,15 @@ console.log(product)
         <div className="grid md:grid-cols-2 gap-8 mb-12">
           {/* Image Gallery */}
           <div className="space-y-4">
-            <div className="relative aspect-square rounded-lg overflow-hidden border-2 border-yellow-500/20">
-              {/* Displaying the image with a fallback */}
+            <div className="relative rounded-lg overflow-hidden border-2 border-yellow-500/20" style={{ minHeight: '400px', maxHeight: '600px', width: '100%' }}>
               <img
                 src={images?.length > 0 ? images[selectedImage] : '/placeholder.svg'}
                 alt={title || 'Product Image'}
-                className="object-cover w-full h-full"
+                className="object-contain w-full h-full"
+                style={{ maxHeight: '600px' }}
               />
             </div>
-            <div className="flex gap-2 overflow-x-auto">
+            <div className="flex gap-2 overflow-x-auto pb-2">
               {images?.length > 0 ? (
                 images.map((img, index) => (
                   <button
@@ -92,44 +91,43 @@ console.log(product)
 
         {/* Specifications */}
         <section className="mb-12">
-  <h2 className="text-2xl font-bold mb-6">Specifications</h2>
-  <div className="grid md:grid-cols-3 gap-6">
-    <div className="bg-yellow-500 p-6 rounded-lg">
-      <div className="flex items-center gap-2 mb-4">
-        <Info className="w-6 h-6" />
-        <h3 className="font-semibold">Product details</h3>
-      </div>
-      <ul className="space-y-2">
-        {product.product.description.split('\n').map((desc, index) => (
-          <li key={index}>{desc}</li>
-        ))}
-      </ul>
-    </div>
-    <div className="bg-yellow-500 p-6 rounded-lg">
-      <div className="flex items-center gap-2 mb-4">
-        <Ruler className="w-6 h-6" />
-        <h3 className="font-semibold">Dimensions</h3>
-      </div>
-      <ul className="space-y-2">
-        {product.product.dimension.split('\n').map((dim, index) => (
-          <li key={index}>{dim}</li>
-        ))}
-      </ul>
-    </div>
-    <div className="bg-yellow-500 p-6 rounded-lg">
-      <div className="flex items-center gap-2 mb-4">
-        <Tools className="w-6 h-6" />
-        <h3 className="font-semibold">Services</h3>
-      </div>
-      <ul className="space-y-2">
-        {product.product.services.split('\n').map((service, index) => (
-          <li key={index}>{service}</li>
-        ))}
-      </ul>
-    </div>
-  </div>
-</section>
-
+          <h2 className="text-2xl font-bold mb-6">Specifications</h2>
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="bg-yellow-500 p-6 rounded-lg">
+              <div className="flex items-center gap-2 mb-4">
+                <Info className="w-6 h-6" />
+                <h3 className="font-semibold">Product details</h3>
+              </div>
+              <ul className="space-y-2">
+                {product.product.description.split('\n').map((desc, index) => (
+                  <li key={index}>{desc}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="bg-yellow-500 p-6 rounded-lg">
+              <div className="flex items-center gap-2 mb-4">
+                <Ruler className="w-6 h-6" />
+                <h3 className="font-semibold">Dimensions</h3>
+              </div>
+              <ul className="space-y-2">
+                {product.product.dimension.split('\n').map((dim, index) => (
+                  <li key={index}>{dim}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="bg-yellow-500 p-6 rounded-lg">
+              <div className="flex items-center gap-2 mb-4">
+                <Tools className="w-6 h-6" />
+                <h3 className="font-semibold">Services</h3>
+              </div>
+              <ul className="space-y-2">
+                {product.product.services.split('\n').map((service, index) => (
+                  <li key={index}>{service}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
 
         {/* Reviews */}
         <section className="mb-12">
