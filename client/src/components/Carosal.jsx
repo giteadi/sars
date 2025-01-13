@@ -7,9 +7,10 @@ export default function Carousel() {
   const dispatch = useDispatch();
   const { products } = useSelector((state) => state.property);
 
-  const [currentSlide, setCurrentSlide] = useState(1); // Start at the first actual product
+  const [currentSlide, setCurrentSlide] = useState(1); // Start from the first actual product
   const [isAnimating, setIsAnimating] = useState(false);
 
+  // Fetch products on mount
   useEffect(() => {
     dispatch(fetchProducts());
   }, [dispatch]);
@@ -21,13 +22,13 @@ export default function Carousel() {
       : [];
 
   const handleNext = () => {
-    if (isAnimating) return;
+    if (isAnimating) return; // Prevent double trigger if animating
     setIsAnimating(true);
     setCurrentSlide((prev) => prev + 1);
   };
 
   const handlePrev = () => {
-    if (isAnimating) return;
+    if (isAnimating) return; // Prevent double trigger if animating
     setIsAnimating(true);
     setCurrentSlide((prev) => prev - 1);
   };
@@ -36,6 +37,7 @@ export default function Carousel() {
   const handleTransitionEnd = () => {
     setIsAnimating(false);
 
+    // Ensure we loop back to the correct product when at the edges
     if (currentSlide === 0) {
       setCurrentSlide(products.length);
     } else if (currentSlide === extendedProducts.length - 1) {
@@ -45,9 +47,11 @@ export default function Carousel() {
 
   // Automatic sliding every 3 seconds
   useEffect(() => {
-    const interval = setInterval(handleNext, 3000);
-    return () => clearInterval(interval); // Cleanup interval
-  }, [currentSlide]);
+    if (!isAnimating) {
+      const interval = setInterval(handleNext, 3000); // Trigger the next slide every 3 seconds
+      return () => clearInterval(interval); // Cleanup interval on component unmount
+    }
+  }, [currentSlide, isAnimating]); // Depend on `currentSlide` and `isAnimating`
 
   return (
     <section className="container mx-auto px-4 py-16">
@@ -75,10 +79,10 @@ export default function Carousel() {
                     src={
                       product.images && product.images.length > 0
                         ? product.images[0]
-                        : "https://via.placeholder.com/400x600?text=No+Image"
+                        : "https://via.placeholder.com/600x800?text=No+Image"
                     }
                     alt={product.title}
-                    className="w-full max-w-[200px] h-[400px] object-contain"
+                    className="w-full max-w-[350px] h-[500px] object-contain"
                   />
                   <p className="mt-4 text-lg text-amber-400">{product.title}</p>
                 </div>
