@@ -11,7 +11,7 @@ import { addItemToCart, updateCartItemQuantity } from '../Redux/CartSlice';
 export default function SingleProduct() {
   const { id } = useParams();
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const nav = useNavigate();
   const { product, loading, error } = useSelector((state) => state.property);
   const { cartItems } = useSelector((state) => state.cart);
   const [selectedImage, setSelectedImage] = useState(0);
@@ -31,7 +31,9 @@ export default function SingleProduct() {
   if (error) {
     return <div className="min-h-screen bg-black text-white flex items-center justify-center">Error: {error}</div>;
   }
-
+if(!user){
+  nav('/login');
+}
   if (!product) {
     return <div className="min-h-screen bg-black text-white flex items-center justify-center">Product not found</div>;
   }
