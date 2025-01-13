@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   fetchCartItems,
@@ -14,25 +14,17 @@ const Cart = () => {
   const { cartItems, totalAmount, loading, error } = useSelector((state) => state.cart);
   const user = useSelector((state) => state.auth.user);
 
-  // Fetch cart items when the user is available
   useEffect(() => {
     if (user?.user_id) {
       dispatch(fetchCartItems(user.user_id));
     }
   }, [dispatch, user]);
 
-  // Log cart items for debugging
-  useEffect(() => {
-    console.log("Cart items:", cartItems); // Check cart items after the fetch
-  }, [cartItems]);
-
-  // Handle item removal
-  const handleRemoveItem = (cartId) => {
+  const handleRemoveItem = useCallback((cartId) => {
     dispatch(removeCartItem(cartId));
-  };
+  }, [dispatch]);
 
-  // Handle quantity update
-  const handleUpdateQuantity = (cartId, action) => {
+  const handleUpdateQuantity = useCallback((cartId, action) => {
     const currentItem = cartItems.find((item) => item.id === cartId);
 
     if (currentItem) {
@@ -44,23 +36,25 @@ const Cart = () => {
         dispatch(removeCartItem(cartId));
       }
     }
-  };
+  }, [cartItems, dispatch]);
 
-  // Handle clear cart action
   const handleClearCart = () => {
-    if (user?.id) {
+    if (user?.user_id) {
       dispatch(clearUserCart(user.user_id));
     }
   };
 
-  // Loading state
+  useEffect(() => {
+    const newTotalAmount = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+    dispatch({ type: 'cart/updateTotalAmount', payload: newTotalAmount });
+  }, [cartItems, dispatch]);
+
   if (loading) {
     return <div className="text-center py-8">Loading...</div>;
   }
 
-  // Error state
   if (error) {
-    return <div className="text-center py-8 text-red-500">Error: {error}</div>;
+    return <div className="text-center py-8 text-red-500">Error: {error.message || error}</div>;
   }
 
   return (
@@ -78,9 +72,13 @@ const Cart = () => {
         ) : (
           <div className="space-y-6">
             {cartItems.map((item) => (
-              <div key={item.id || item.cart_item_id} className="flex justify-between items-center bg-gray-800 p-4 rounded-lg">
+              <div key={item.id} className="flex justify-between items-center bg-gray-800 p-4 rounded-lg">
                 <div className="flex items-center gap-4">
-                  <img src="/placeholder.svg" alt={item.title} className="w-20 h-20 object-cover rounded-lg" />
+                  <img 
+                    src={item.images && item.images.length > 0 ? item.images[0] : "/placeholder.svg"} 
+                    alt={item.title} 
+                    className="w-20 h-20 object-cover rounded-lg"
+                  />
                   <div className="space-y-2">
                     <h3 className="font-semibold">{item.title}</h3>
                     <p>₹{item.price}</p>
@@ -88,20 +86,20 @@ const Cart = () => {
                 </div>
                 <div className="flex items-center gap-4">
                   <button
-                    onClick={() => handleUpdateQuantity(item.id || item.cart_item_id, "decrease")}
+                    onClick={() => handleUpdateQuantity(item.id, "decrease")}
                     className="p-1 bg-gray-700 text-white rounded-md hover:bg-gray-600"
                   >
                     <Minus className="w-4 h-4" />
                   </button>
                   <span>{item.quantity}</span>
                   <button
-                    onClick={() => handleUpdateQuantity(item.id || item.cart_item_id, "increase")}
+                    onClick={() => handleUpdateQuantity(item.id, "increase")}
                     className="p-1 bg-gray-700 text-white rounded-md hover:bg-gray-600"
                   >
                     <Plus className="w-4 h-4" />
                   </button>
                   <button
-                    onClick={() => handleRemoveItem(item.id || item.cart_item_id)}
+                    onClick={() => handleRemoveItem(item.id)}
                     className="text-red-500 hover:text-red-400"
                   >
                     <Trash className="w-5 h-5" />
