@@ -6,20 +6,32 @@ import {
   removeCartItem,
   clearUserCart,
 } from "../Redux/CartSlice";
+import { fetchProducts } from "../Redux/propertySlice"; // Import fetchProducts
 import { ShoppingCart, Trash, ChevronRight, Plus, Minus } from "lucide-react";
 import Footer from "../pages/Footer";
 
 const Cart = () => {
   const dispatch = useDispatch();
   const { cartItems, totalAmount, loading, error } = useSelector((state) => state.cart);
+  const { products } = useSelector((state) => state.property); // Get products from Redux
   const user = useSelector((state) => state.auth.user);
 
-  // Fetch cart items on component load
+  // Fetch cart items and products on component load
   useEffect(() => {
     if (user?.user_id) {
-      dispatch(fetchCartItems(user.user_id));
+      dispatch(fetchCartItems(user.user_id)); // Fetch cart items
     }
+    dispatch(fetchProducts()); // Fetch products data
   }, [dispatch, user]);
+
+  // Add images from products to cart items
+  const mergedCartItems = cartItems.map((item) => {
+    const product = products.find((p) => p.id === item.product_id || p.title === item.title); // Match by product_id or title
+    return {
+      ...item,
+      images: product?.images || [], // Use product images if available
+    };
+  });
 
   // Handle quantity update
   const handleUpdateQuantity = useCallback(
@@ -70,15 +82,19 @@ const Cart = () => {
       </header>
 
       <main className="flex-grow max-w-6xl mx-auto p-4">
-        {cartItems.length === 0 ? (
+        {mergedCartItems.length === 0 ? (
           <div className="text-center text-xl font-semibold">Your cart is empty</div>
         ) : (
           <div className="space-y-6">
-            {cartItems.map((item) => (
+            {mergedCartItems.map((item) => (
               <div key={item.id} className="flex justify-between items-center bg-gray-800 p-4 rounded-lg">
                 <div className="flex items-center gap-4">
                   <img
-                    src={item.images && item.images.length > 0 ? item.images[0] : "/placeholder.svg"}
+                    src={
+                      item.images.length > 0
+                        ? item.images[0] // Use the first image in the array
+                        : "https://res.cloudinary.com/bazeercloud/image/upload/v1736018602/Ivry_Door_with_open-Photoroom_de4e98.png" // Default placeholder
+                    }
                     alt={item.title}
                     className="w-20 h-20 object-cover rounded-lg"
                   />
@@ -114,13 +130,13 @@ const Cart = () => {
           </div>
         )}
 
-        {cartItems.length > 0 && (
+        {mergedCartItems.length > 0 && (
           <>
             <div className="mt-6 flex justify-between items-center bg-gray-800 p-4 rounded-lg">
               <div>
                 <span className="text-xl font-semibold">Total:</span>
                 <span className="ml-2 text-sm text-gray-400">
-                  ({cartItems.reduce((acc, item) => acc + item.quantity, 0)} items)
+                  ({mergedCartItems.reduce((acc, item) => acc + item.quantity, 0)} items)
                 </span>
               </div>
               <span className="text-2xl font-bold text-yellow-500">₹{totalAmount.toFixed(2)}</span>
