@@ -11,6 +11,7 @@ const cloudinaryConnect = require("./Config/cloudinary");
 // const chekRoutes = require('./Routes/chekRoutes');
 // const reserveRoutes = require('./Routes/reservationRoutes');
 // const paymentRoutes = require('./Routes/paymentRoutes');
+const cartRoutes=require("./Routes/cartRoutes");
 cloudinaryConnect();
 
 // Middlewares
@@ -24,6 +25,7 @@ app.use(fileUpload({
 app.use(express.urlencoded({ extended: true }));
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/admin", adminRoutes);
+app.use('/api/v1',cartRoutes);
 // app.use("/api/v1/property", propertyRoutes);
 // app.use("/api/v1/testimonial",testimonialRoutes);
 // app.use("/api/v1/check", chekRoutes);

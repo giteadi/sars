@@ -27,7 +27,7 @@ export const loginUser = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     try {
       const response = await axios.post('http://localhost:4000/api/v1/user/login', userData);
-      // console.log(response.data);
+      // Include userId in the returned data
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: 'Login failed!' });
@@ -63,7 +63,7 @@ const authSlice = createSlice({
     loading: false,
     error: null,
     user: null,
-    userId: null,
+    userId: null,  // Ensure userId is present in the initial state
     isAuthenticated: false,
     isOTPModalOpen: false,
     otpEmail: '',
@@ -96,7 +96,7 @@ const authSlice = createSlice({
       .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload?.user || {};
-        state.userId = action.payload?.user?.userId || null;
+        state.userId = action.payload?.user?.userId || null;  // Store userId in state
         state.isAuthenticated = true;
       })
       .addCase(registerUser.rejected, (state, action) => {
@@ -112,7 +112,7 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload?.user || {};
-        state.userId = action.payload?.user?.userId || null;
+        state.userId = action.payload?.user?.userId || null;  // Store userId in state
         state.isAuthenticated = true;
         toast.success('Login successful!');
       })

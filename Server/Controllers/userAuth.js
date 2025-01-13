@@ -162,7 +162,15 @@ const login = async (req, res) => {
             return res.status(200).json({
                 success: true,
                 message: "Login successful",
-                user: { user_id:user.user_id,name: user.name, email: user.email, role: user.role,biirthdate:user.birthdate,number:user.phone_number,age:user.age }, // Include role in response
+                user: {
+                    user_id: user.id,  // Corrected to match your column name 'id'
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
+                    birthdate: user.birthdate,  // Fixed typo from 'biirthdate' to 'birthdate'
+                    number: user.phone_number,
+                    age: user.age
+                }, // Include role in response
             });
         } else {
             return res.status(401).json({ error: "Invalid credentials." });
@@ -176,5 +184,6 @@ const login = async (req, res) => {
         });
     }
 };
+
 
 module.exports = { register, verifyOtp, login };

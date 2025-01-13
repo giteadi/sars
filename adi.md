@@ -28,3 +28,16 @@ CREATE TABLE product_images (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
+
+-- Create the cart table
+CREATE TABLE cart (
+    id INT AUTO_INCREMENT PRIMARY KEY,          -- Primary key for the cart entry
+    user_id INT NOT NULL,                       -- Foreign key referencing the user (from userdata table)
+    product_id INT NOT NULL,                    -- Foreign key referencing the product (from products table)
+    quantity INT NOT NULL DEFAULT 1,            -- Quantity of the product in the cart
+    added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Timestamp when the product was added to the cart
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Timestamp when the cart entry was last updated
+    FOREIGN KEY (user_id) REFERENCES userdata(id) ON DELETE CASCADE, -- When the user is deleted, delete the cart items associated with the user
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE -- When the product is deleted, delete the cart items associated with the product
+);
+

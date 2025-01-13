@@ -1,19 +1,20 @@
 import { useState, useEffect } from 'react';
 import { FaSearch, FaShoppingCart, FaUser, FaBars } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux'; // Import to access Redux state and dispatch actions
-import { logoutUser } from '../Redux/AuthSlice'; // Import the logout action
-import  toast  from 'react-hot-toast'; // To show toast notifications
+import { Link, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { logoutUser } from '../Redux/AuthSlice';
+import toast from 'react-hot-toast';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false); // state for dropdown visibility
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
 
-  // Access user data from Redux store
-  const user = useSelector((state) => state.auth.user); // Adjust path to the user state as needed
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated); // Check if the user is authenticated
-  const dispatch = useDispatch(); // For dispatching actions
+  const user = useSelector((state) => state.auth.user);
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const { cartItems } = useSelector((state) => state.cart); // Get cart items from Redux store
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -25,16 +26,16 @@ const Navbar = () => {
     };
 
     window.addEventListener('scroll', handleScroll);
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Handle logout
   const handleLogout = () => {
-    dispatch(logoutUser()); // Dispatch logout action
-    toast.success('Logout successful!'); // Show success toast
+    dispatch(logoutUser());
+    toast.success('Logout successful!');
+  };
+
+  const handleCartClick = () => {
+    navigate('/cart');
   };
 
   return (
@@ -93,19 +94,26 @@ const Navbar = () => {
 
         {/* Icons */}
         <div className="flex items-center space-x-6">
-          <button className="p-2 hover:text-amber-400 transition-colors">
+          <button 
+            className="p-2 hover:text-amber-400 transition-colors relative"
+            onClick={handleCartClick}
+          >
             <FaShoppingCart className="w-6 h-6" />
+            {cartItems.length > 0 && (
+              <span className="absolute -top-2 -right-2 bg-amber-400 text-black text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                {cartItems.length}
+              </span>
+            )}
           </button>
 
           {/* User Icon with Dropdown */}
           <div className="relative flex items-center space-x-2">
             <button
-              onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)} // toggle dropdown
+              onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
               className="p-2"
             >
               <div className="w-8 h-8 rounded-full bg-amber-400/20 flex items-center justify-center shadow-[0_0_15px_rgba(251,191,36,0.3)]">
                 <FaUser className="w-5 h-5 text-amber-400"/>
-               
               </div>
             </button>
             <p>{user ? user.name : 'Guest'}</p>
@@ -121,7 +129,7 @@ const Navbar = () => {
                       Profile
                     </Link>
                     <button
-                      onClick={handleLogout} // Trigger logout
+                      onClick={handleLogout}
                       className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-white/10 rounded-md"
                     >
                       Logout

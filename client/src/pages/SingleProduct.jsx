@@ -5,15 +5,19 @@ import { ShoppingCart, Star, Info, Ruler, PenToolIcon as Tools } from 'lucide-re
 import Footer from './Footer';
 import Navbar from '../components/NavBar';
 import { useNavigate } from 'react-router-dom';
-import { fetchProductById } from '../redux/propertySlice';
+import { fetchProductById } from '../Redux/propertySlice';
+import { addItemToCart, updateCartItemQuantity } from '../Redux/CartSlice';
 
 export default function SingleProduct() {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { product, loading, error } = useSelector((state) => state.property);
+  const { cartItems } = useSelector((state) => state.cart);
   const [selectedImage, setSelectedImage] = useState(0);
-  
+  const [addingToCart, setAddingToCart] = useState(false);
+  const user = useSelector((state) => state.auth.user); 
+
   useEffect(() => {
     if (id) {
       dispatch(fetchProductById(id));
@@ -33,6 +37,37 @@ export default function SingleProduct() {
   }
 
   const { title, price, description, dimension, services, images } = product || {};
+  console.log("user id->", user.user_id, "product id->", id, "price->", product.product.price);
+
+  const handleAddToCart = async () => {
+    if (!product || !user) return;
+    setAddingToCart(true);
+    try {
+      // Check if the item is already in the cart
+      const existingItem = cartItems.find(item => item.product_id === id);
+      if (existingItem) {
+        // If the item exists, update its quantity instead of adding a new item
+        await dispatch(updateCartItemQuantity({
+          cartId: existingItem.cart_item_id,
+          quantity: existingItem.quantity + 1
+        })).unwrap();
+      } else {
+        // If the item doesn't exist, add it to the cart
+        await dispatch(addItemToCart({
+          userId: user.user_id,
+          productId: id,
+          quantity: 1,
+          price: product.product.price
+        })).unwrap();
+      }
+      // Optional: Show success message
+    } catch (error) {
+      console.error('Failed to add to cart:', error);
+      // Optional: Show error message
+    } finally {
+      setAddingToCart(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -80,10 +115,11 @@ export default function SingleProduct() {
                 Buy Now
               </button>
               <button
-                className="px-6 py-2 bg-gray-700 text-white font-semibold rounded-md hover:bg-gray-600 transition-colors"
-                onClick={() => navigate('/cart')}
+                className="px-6 py-2 bg-gray-700 text-white font-semibold rounded-md hover:bg-gray-600 transition-colors disabled:opacity-50"
+                onClick={handleAddToCart}
+                disabled={addingToCart || !user}
               >
-                Add to Cart
+                {addingToCart ? 'Adding...' : 'Add to Cart'}
               </button>
             </div>
           </div>
@@ -153,3 +189,4 @@ export default function SingleProduct() {
     </div>
   );
 }
+

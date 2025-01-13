@@ -8,7 +8,7 @@ export const fetchProducts = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get('http://localhost:4000/api/v1/admin/getProducts');
-      console.log('Fetched Products:', response.data); // Log API Response
+      // console.log('Fetched Products:', response.data); 
       return response.data;
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -23,7 +23,7 @@ export const fetchProductById = createAsyncThunk(
   async (productId, { rejectWithValue }) => {
     try {
       const response = await axios.get(`http://localhost:4000/api/v1/admin/getProductById/${productId}`);
-      console.log('Fetched Product by ID:', response.data); // Log API Response
+      // console.log('Fetched Product by ID:', response.data); 
       return response.data;
     } catch (error) {
       console.error('Error fetching product by ID:', error);
