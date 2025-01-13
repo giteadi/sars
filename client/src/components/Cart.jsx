@@ -6,7 +6,7 @@ import {
   removeCartItem,
   clearUserCart,
 } from "../Redux/CartSlice";
-import { ShoppingCart, Trash, ChevronRight, Plus, Minus } from 'lucide-react';
+import { ShoppingCart, Trash, ChevronRight, Plus, Minus } from "lucide-react";
 import Footer from "../pages/Footer";
 
 const Cart = () => {
@@ -14,40 +14,43 @@ const Cart = () => {
   const { cartItems, totalAmount, loading, error } = useSelector((state) => state.cart);
   const user = useSelector((state) => state.auth.user);
 
+  // Fetch cart items on component load
   useEffect(() => {
     if (user?.user_id) {
       dispatch(fetchCartItems(user.user_id));
     }
   }, [dispatch, user]);
 
-  const handleRemoveItem = useCallback((cartId) => {
-    dispatch(removeCartItem(cartId));
-  }, [dispatch]);
-
-  const handleUpdateQuantity = useCallback((cartId, action) => {
-    const currentItem = cartItems.find((item) => item.id === cartId);
-
-    if (currentItem) {
-      const newQuantity = action === "increase" ? currentItem.quantity + 1 : currentItem.quantity - 1;
-
-      if (newQuantity > 0) {
-        dispatch(updateCartItemQuantity({ cartId, quantity: newQuantity }));
-      } else if (newQuantity === 0) {
-        dispatch(removeCartItem(cartId));
+  // Handle quantity update
+  const handleUpdateQuantity = useCallback(
+    (cartId, action) => {
+      const currentItem = cartItems.find((item) => item.id === cartId);
+      if (currentItem) {
+        const newQuantity = action === "increase" ? currentItem.quantity + 1 : currentItem.quantity - 1;
+        if (newQuantity > 0) {
+          dispatch(updateCartItemQuantity({ cartId, quantity: newQuantity }));
+        } else if (newQuantity === 0) {
+          dispatch(removeCartItem(cartId));
+        }
       }
-    }
-  }, [cartItems, dispatch]);
+    },
+    [cartItems, dispatch]
+  );
 
+  // Handle removing an item
+  const handleRemoveItem = useCallback(
+    (cartId) => {
+      dispatch(removeCartItem(cartId));
+    },
+    [dispatch]
+  );
+
+  // Handle clearing the cart
   const handleClearCart = () => {
     if (user?.user_id) {
       dispatch(clearUserCart(user.user_id));
     }
   };
-
-  useEffect(() => {
-    const newTotalAmount = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
-    dispatch({ type: 'cart/updateTotalAmount', payload: newTotalAmount });
-  }, [cartItems, dispatch]);
 
   if (loading) {
     return <div className="text-center py-8">Loading...</div>;
@@ -74,9 +77,9 @@ const Cart = () => {
             {cartItems.map((item) => (
               <div key={item.id} className="flex justify-between items-center bg-gray-800 p-4 rounded-lg">
                 <div className="flex items-center gap-4">
-                  <img 
-                    src={item.images && item.images.length > 0 ? item.images[0] : "/placeholder.svg"} 
-                    alt={item.title} 
+                  <img
+                    src={item.images && item.images.length > 0 ? item.images[0] : "/placeholder.svg"}
+                    alt={item.title}
                     className="w-20 h-20 object-cover rounded-lg"
                   />
                   <div className="space-y-2">

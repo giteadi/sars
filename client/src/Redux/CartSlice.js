@@ -4,18 +4,18 @@ import axios from "axios";
 const API_BASE_URL = "http://localhost:4000/api/v1";
 
 const initialState = {
-  cartItems: [], // Array to store cart items
-  totalAmount: 0, // Tracks the total value of the cart
-  loading: false, // Loading state for async operations
-  error: null, // Error state for API calls
+  cartItems: [],
+  totalAmount: 0,
+  loading: false,
+  error: null,
 };
 
-// Utility function to calculate totalAmount with safe number conversion
+// Utility function to calculate totalAmount
 const calculateTotalAmount = (cartItems) => {
   return cartItems.reduce((acc, item) => {
     const price = Number(item.price) || 0;
     const quantity = Number(item.quantity) || 0;
-    return acc + (price * quantity);
+    return acc + price * quantity;
   }, 0);
 };
 
@@ -36,18 +36,18 @@ export const addItemToCart = createAsyncThunk(
   "cart/addItemToCart",
   async ({ userId, productId, quantity, price }, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/addCart`, { 
-        userId, 
-        productId, 
+      const response = await axios.post(`${API_BASE_URL}/addCart`, {
+        userId,
+        productId,
         quantity,
-        price // Include price in the request
+        price,
       });
-      return { 
+      return {
         cartItem: {
           ...response.data.cartItem,
-          price // Ensure price is included in the returned cart item
-        }, 
-        userId 
+          price,
+        },
+        userId,
       };
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -102,14 +102,20 @@ const cartSlice = createSlice({
       state.error = null;
     });
     builder.addCase(fetchCartItems.fulfilled, (state, action) => {
-      state.cartItems = action.payload || [];
+      state.cartItems = action.payload.map((item) => ({
+        id: item.id,
+        title: item.title,
+        price: Number(item.price) || 0,
+        quantity: Number(item.quantity) || 1,
+        images: item.images || [], // Add images array for UI rendering
+      }));
       state.totalAmount = calculateTotalAmount(state.cartItems);
       state.loading = false;
     });
     builder.addCase(fetchCartItems.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload;
-      state.cartItems = []; // Reset to empty array on error
+      state.cartItems = [];
     });
 
     // Add item to cart
@@ -119,15 +125,13 @@ const cartSlice = createSlice({
     });
     builder.addCase(addItemToCart.fulfilled, (state, action) => {
       const { cartItem } = action.payload;
-      const existingItem = state.cartItems.find(
-        (item) => item.cart_item_id === cartItem.cart_item_id
-      );
+      const existingItem = state.cartItems.find((item) => item.id === cartItem.id);
       if (existingItem) {
         existingItem.quantity += cartItem.quantity;
       } else {
         state.cartItems.push({
           ...cartItem,
-          price: Number(cartItem.price) || 0 // Ensure price is stored as a number
+          price: Number(cartItem.price) || 0,
         });
       }
       state.totalAmount = calculateTotalAmount(state.cartItems);
@@ -145,12 +149,9 @@ const cartSlice = createSlice({
     });
     builder.addCase(updateCartItemQuantity.fulfilled, (state, action) => {
       const { cartId, quantity, updatedItem } = action.payload;
-      const existingItem = state.cartItems.find(
-        (item) => item.cart_item_id === cartId
-      );
+      const existingItem = state.cartItems.find((item) => item.id === cartId);
       if (existingItem) {
         existingItem.quantity = Number(quantity);
-        // Update other properties if needed
         Object.assign(existingItem, updatedItem);
       }
       state.totalAmount = calculateTotalAmount(state.cartItems);
@@ -167,9 +168,7 @@ const cartSlice = createSlice({
       state.error = null;
     });
     builder.addCase(removeCartItem.fulfilled, (state, action) => {
-      state.cartItems = state.cartItems.filter(
-        (item) => item.cart_item_id !== action.payload
-      );
+      state.cartItems = state.cartItems.filter((item) => item.id !== action.payload);
       state.totalAmount = calculateTotalAmount(state.cartItems);
       state.loading = false;
     });
@@ -196,4 +195,3 @@ const cartSlice = createSlice({
 });
 
 export default cartSlice.reducer;
-
