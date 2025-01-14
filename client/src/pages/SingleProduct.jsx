@@ -7,7 +7,7 @@ import Footer from './Footer';
 import Navbar from '../components/NavBar';
 import { fetchProductById } from '../Redux/propertySlice';
 import { addItemToCart, updateCartItemQuantity } from '../Redux/CartSlice';
-
+import toast from 'react-hot-toast';
 export default function SingleProduct() {
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -79,8 +79,8 @@ export default function SingleProduct() {
             const validationResult = await dispatch(validatePayment(paymentData)).unwrap();
 
             if (validationResult.msg === 'Payment validation successful and reservation created') {
-              alert('Payment successful! Order confirmed.');
-              nav('/orders');
+              toast.success('Payment successful! Order confirmed.');
+              
             } else {
               throw new Error('Payment validation failed');
             }
