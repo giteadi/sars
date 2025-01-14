@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { ShoppingCart, Star, Info, Ruler, PenToolIcon as Tools } from 'lucide-react';
+import { ShoppingCart, Star, Info, Ruler, PenTool } from 'lucide-react';
+import { createRazorpayOrder, validatePayment } from '../Redux/PaymentSlice';
 import Footer from './Footer';
 import Navbar from '../components/NavBar';
-import { useNavigate } from 'react-router-dom';
 import { fetchProductById } from '../Redux/propertySlice';
 import { addItemToCart, updateCartItemQuantity } from '../Redux/CartSlice';
 
@@ -16,13 +16,128 @@ export default function SingleProduct() {
   const { cartItems } = useSelector((state) => state.cart);
   const [selectedImage, setSelectedImage] = useState(0);
   const [addingToCart, setAddingToCart] = useState(false);
-  const user = useSelector((state) => state.auth.user); 
+  const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
     if (id) {
       dispatch(fetchProductById(id));
     }
   }, [dispatch, id]);
+
+  useEffect(() => {
+    const loadRazorpayScript = () => {
+      if (!document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]')) {
+        const script = document.createElement('script');
+        script.src = "https://checkout.razorpay.com/v1/checkout.js";
+        script.async = true;
+        document.body.appendChild(script);
+      }
+    };
+    loadRazorpayScript();
+  }, []);
+
+  const handleBuyNow = async () => {
+    if (!user) {
+      nav('/login');
+      return;
+    }
+
+    try {
+      const orderData = {
+        amount: Number(product.product.price) * 100,
+        currency: "INR",
+        receipt: `receipt_${Date.now()}`,
+        user_id: user.user_id,
+        product_id: id
+      };
+
+      const orderResult = await dispatch(createRazorpayOrder(orderData)).unwrap();
+
+      if (!orderResult || !orderResult.id) {
+        throw new Error('Failed to create order');
+      }
+
+      const options = {
+        key: "rzp_test_suGlReUubwbXnb",
+        amount: orderResult.amount,
+        currency: orderResult.currency,
+        name: "Product Purchase",
+        description: `Payment for ${product.product.title}`,
+        order_id: orderResult.id,
+        handler: async (response) => {
+          try {
+            const paymentData = {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              amount: orderResult.amount,
+              currency: "INR",
+              user_id: user.user_id,
+              product_id: id
+            };
+
+            const validationResult = await dispatch(validatePayment(paymentData)).unwrap();
+
+            if (validationResult.msg === 'Payment validation successful and reservation created') {
+              alert('Payment successful! Order confirmed.');
+              nav('/orders');
+            } else {
+              throw new Error('Payment validation failed');
+            }
+          } catch (error) {
+            console.error('Payment verification failed:', error);
+            alert('Payment verification failed. Please contact support.');
+          }
+        },
+        prefill: {
+          name: user.name || "",
+          email: user.email || "",
+          contact: user.phone || ""
+        },
+        theme: {
+          color: "#f59e0b"
+        }
+      };
+
+      const razorpay = new window.Razorpay(options);
+      razorpay.on('payment.failed', function(response) {
+        alert('Payment failed. Please try again.');
+        console.error('Payment failed:', response.error);
+      });
+      razorpay.open();
+
+    } catch (error) {
+      console.error('Error initiating payment:', error);
+      alert('Failed to initiate payment. Please try again.');
+    }
+  };
+
+  const handleAddToCart = async () => {
+    if (!product || !user) return;
+    setAddingToCart(true);
+    try {
+      const existingItem = cartItems.find(item => item.product_id === id);
+      if (existingItem) {
+        await dispatch(updateCartItemQuantity({
+          cartId: existingItem.cart_item_id,
+          quantity: existingItem.quantity + 1
+        })).unwrap();
+      } else {
+        await dispatch(addItemToCart({
+          userId: user.user_id,
+          productId: id,
+          quantity: 1,
+          price: product.product.price
+        })).unwrap();
+      }
+      alert('Added to cart successfully!');
+    } catch (error) {
+      console.error('Failed to add to cart:', error);
+      alert('Failed to add to cart. Please try again.');
+    } finally {
+      setAddingToCart(false);
+    }
+  };
 
   if (loading) {
     return <div className="min-h-screen bg-black text-white flex items-center justify-center">Loading...</div>;
@@ -31,65 +146,34 @@ export default function SingleProduct() {
   if (error) {
     return <div className="min-h-screen bg-black text-white flex items-center justify-center">Error: {error}</div>;
   }
-if(!user){
-  nav('/login');
-}
+
+  if (!user) {
+    nav('/login');
+    return null;
+  }
+
   if (!product) {
     return <div className="min-h-screen bg-black text-white flex items-center justify-center">Product not found</div>;
   }
 
-  const { title, price, description, dimension, services, images } = product || {};
-  console.log("user id->", user.user_id, "product id->", id, "price->", product.product.price);
-
-  const handleAddToCart = async () => {
-    if (!product || !user) return;
-    setAddingToCart(true);
-    try {
-      // Check if the item is already in the cart
-      const existingItem = cartItems.find(item => item.product_id === id);
-      if (existingItem) {
-        // If the item exists, update its quantity instead of adding a new item
-        await dispatch(updateCartItemQuantity({
-          cartId: existingItem.cart_item_id,
-          quantity: existingItem.quantity + 1
-        })).unwrap();
-      } else {
-        // If the item doesn't exist, add it to the cart
-        await dispatch(addItemToCart({
-          userId: user.user_id,
-          productId: id,
-          quantity: 1,
-          price: product.product.price
-        })).unwrap();
-      }
-      // Optional: Show success message
-    } catch (error) {
-      console.error('Failed to add to cart:', error);
-      // Optional: Show error message
-    } finally {
-      setAddingToCart(false);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-black text-white">
       <Navbar />
-
       <main className="max-w-6xl mx-auto pt-40">
+        {/* Rest of your existing JSX remains the same */}
         <div className="grid md:grid-cols-2 gap-8 mb-12">
-          {/* Image Gallery */}
           <div className="space-y-4">
             <div className="relative rounded-lg overflow-hidden border-2 border-yellow-500/20" style={{ minHeight: '400px', maxHeight: '600px', width: '100%' }}>
               <img
-                src={images?.length > 0 ? images[selectedImage] : '/placeholder.svg'}
-                alt={title || 'Product Image'}
+                src={product.images?.length > 0 ? product.images[selectedImage] : '/placeholder.svg'}
+                alt={product.product.title || 'Product Image'}
                 className="object-contain w-full h-full"
                 style={{ maxHeight: '600px' }}
               />
             </div>
             <div className="flex gap-2 overflow-x-auto pb-2">
-              {images?.length > 0 ? (
-                images.map((img, index) => (
+              {product.images?.length > 0 ? (
+                product.images.map((img, index) => (
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
@@ -106,20 +190,24 @@ if(!user){
             </div>
           </div>
 
-          {/* Product Info */}
           <div className="space-y-6">
-            <h1 className="text-2xl font-bold">{product.product.title|| "Product Title"}</h1>
+            <h1 className="text-2xl font-bold">{product.product.title}</h1>
             <div className="flex items-baseline gap-2">
-              <span className="text-4xl font-bold text-yellow-500">₹{Number(product.product.price)?.toLocaleString('en-IN') || "Price not available"}</span>
+              <span className="text-4xl font-bold text-yellow-500">
+                ₹{Number(product.product.price)?.toLocaleString('en-IN')}
+              </span>
             </div>
             <div className="flex gap-4">
-              <button className="px-6 py-2 bg-yellow-500 text-black font-semibold rounded-md hover:bg-yellow-400 transition-colors">
+              <button 
+                onClick={handleBuyNow}
+                className="px-6 py-2 bg-yellow-500 text-black font-semibold rounded-md hover:bg-yellow-400 transition-colors"
+              >
                 Buy Now
               </button>
               <button
-                className="px-6 py-2 bg-gray-700 text-white font-semibold rounded-md hover:bg-gray-600 transition-colors disabled:opacity-50"
                 onClick={handleAddToCart}
-                disabled={addingToCart || !user}
+                disabled={addingToCart}
+                className="px-6 py-2 bg-gray-700 text-white font-semibold rounded-md hover:bg-gray-600 transition-colors disabled:opacity-50"
               >
                 {addingToCart ? 'Adding...' : 'Add to Cart'}
               </button>
@@ -127,7 +215,7 @@ if(!user){
           </div>
         </div>
 
-        {/* Specifications */}
+        {/* Product details sections */}
         <section className="mb-12">
           <h2 className="text-2xl font-bold mb-6">Specifications</h2>
           <div className="grid md:grid-cols-3 gap-6">
@@ -155,7 +243,7 @@ if(!user){
             </div>
             <div className="bg-yellow-500 p-6 rounded-lg">
               <div className="flex items-center gap-2 mb-4">
-                <Tools className="w-6 h-6" />
+                <PenTool className="w-6 h-6" />
                 <h3 className="font-semibold">Services</h3>
               </div>
               <ul className="space-y-2">
@@ -166,27 +254,7 @@ if(!user){
             </div>
           </div>
         </section>
-
-        {/* Reviews */}
-        <section className="mb-12">
-          <h2 className="text-2xl font-bold mb-6">Reviews</h2>
-          <div className="bg-gray-800 p-6 rounded-lg">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="flex gap-1">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star
-                    key={star}
-                    className="w-5 h-5 text-yellow-500"
-                    fill="currentColor"
-                  />
-                ))}
-              </div>
-              <span className="text-gray-400">(24 reviews)</span>
-            </div>
-          </div>
-        </section>
       </main>
-
       <Footer />
     </div>
   );

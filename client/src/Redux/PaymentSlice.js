@@ -1,147 +1,97 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-// API URL base
-const API_URL = 'http://localhost:4000/api/v1/reservation';
 const PAYMENT_API_URL = 'http://localhost:4000/api/v1/payments';
 
-// Async thunk to create a reservation
-export const createReservation = createAsyncThunk(
-  'payment/createReservation',
-  async (reservationData, { rejectWithValue }) => {
-    try {
-      const response = await axios.post(`${API_URL}/Createreservations`, reservationData);
-      return response.data; // Reservation data (message, reservationId, etc.)
-    } catch (error) {
-      return rejectWithValue(error.response.data); // Handle error
-    }
-  }
-);
-
-// Async thunk to create Razorpay order
+// Create Razorpay order
 export const createRazorpayOrder = createAsyncThunk(
   'payment/createRazorpayOrder',
   async (orderData, { rejectWithValue }) => {
     try {
       const response = await axios.post(`${PAYMENT_API_URL}/order`, orderData);
-      console.log("payment response->",response.data);
-      return response.data; // Razorpay order data (order_id, etc.)
+      return response.data;
     } catch (error) {
-      return rejectWithValue(error.response.data); // Handle error
+      return rejectWithValue(error.response?.data || { 
+        msg: 'Failed to create order',
+        details: error.message 
+      });
     }
   }
 );
 
-// Async thunk to validate the payment and create reservation
-
+// Validate payment with better error handling
 export const validatePayment = createAsyncThunk(
   'payment/validatePayment',
   async (paymentData, { rejectWithValue }) => {
     try {
       const response = await axios.post(`${PAYMENT_API_URL}/validate`, paymentData);
-      return response.data; // Payment validation success message
+      return response.data;
     } catch (error) {
-      return rejectWithValue(error.response.data); // Handle error
+      // Log the full error for debugging
+      console.error('Payment validation error:', error.response || error);
+      
+      return rejectWithValue({
+        msg: error.response?.data?.msg || 'Payment validation failed',
+        details: error.response?.data?.details || error.message,
+        status: error.response?.status
+      });
     }
   }
 );
 
-// Async thunk to update payment status
-export const updatePaymentStatus = createAsyncThunk(
-  'payment/updatePaymentStatus',
-  async ({ reservation_id, payment_status }, { rejectWithValue }) => {
-    try {
-      const response = await axios.put(`${API_URL}/paymentStatus`, { reservation_id, payment_status });
-      return response.data; // Payment status update message
-    } catch (error) {
-      return rejectWithValue(error.response.data); // Handle error
-    }
-  }
-);
-
-// Async thunk to fetch user reservations
-export const getUserReservations = createAsyncThunk(
-  'payment/getUserReservations',
-  async (user_id, { rejectWithValue }) => {
-    try {
-      const response = await axios.get(`${API_URL}/getReservationByUserID/${user_id}`);
-      return response.data; // List of user reservations
-    } catch (error) {
-      return rejectWithValue(error.response.data); // Handle error
-    }
-  }
-);
-export const getAllReservations = createAsyncThunk(
-  'payment/getAllReservations',
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await axios.get(`${API_URL}/getReservation`);
-      return response.data; // List of all reservations
-    } catch (error) {
-      return rejectWithValue(error.response.data); // Handle error
-    }
-  }
-);
-// PaymentSlice
 const paymentSlice = createSlice({
   name: 'payment',
   initialState: {
-    reservation: null,
-    razorpayOrder: null, // Store Razorpay order data
-    paymentStatus: 'pending', // pending, success, failed
-    reservations: [], // Array of user reservations
-    allReservations: [], // Array of all reservations (if needed)
-    error: null,
+    order: null,
+    paymentStatus: 'pending',
     loading: false,
+    error: null,
+    lastError: null // Store detailed error information
   },
   reducers: {
-    resetPaymentStatus: (state) => {
+    resetPayment: (state) => {
+      state.order = null;
       state.paymentStatus = 'pending';
       state.error = null;
+      state.lastError = null;
     },
-    resetReservations: (state) => {
-      state.reservations = [];
+    clearError: (state) => {
       state.error = null;
-    },
-    resetAllReservations: (state) => {
-      state.allReservations = [];
-      state.error = null;
-    },
+      state.lastError = null;
+    }
   },
   extraReducers: (builder) => {
-    // Handle getAllReservations (all reservations in the system)
     builder
-      .addCase(getAllReservations.pending, (state) => {
+      .addCase(createRazorpayOrder.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(getAllReservations.fulfilled, (state, action) => {
+      .addCase(createRazorpayOrder.fulfilled, (state, action) => {
         state.loading = false;
-        state.allReservations = action.payload; // Set all reservations (from the system)
+        state.order = action.payload;
       })
-      .addCase(getAllReservations.rejected, (state, action) => {
+      .addCase(createRazorpayOrder.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload.error || action.payload.message;
-      });
-
-    // Handle getUserReservations (user-specific reservations)
-    builder
-      .addCase(getUserReservations.pending, (state) => {
+        state.error = action.payload?.msg || 'Failed to create order';
+        state.lastError = action.payload;
+      })
+      .addCase(validatePayment.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(getUserReservations.fulfilled, (state, action) => {
+      .addCase(validatePayment.fulfilled, (state) => {
         state.loading = false;
-        state.reservations = action.payload; // Set user reservations
+        state.paymentStatus = 'success';
       })
-      .addCase(getUserReservations.rejected, (state, action) => {
+      .addCase(validatePayment.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload.error || action.payload.message;
+        state.paymentStatus = 'failed';
+        state.error = action.payload?.msg || 'Payment validation failed';
+        state.lastError = action.payload;
       });
-  },
+  }
 });
 
-export const { resetPaymentStatus, resetReservations, resetAllReservations } = paymentSlice.actions;
+export const { resetPayment, clearError } = paymentSlice.actions;
 export default paymentSlice.reducer;
-
 

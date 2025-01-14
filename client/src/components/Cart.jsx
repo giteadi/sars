@@ -6,34 +6,46 @@ import {
   removeCartItem,
   clearUserCart,
 } from "../Redux/CartSlice";
-import { fetchProducts } from "../Redux/propertySlice"; // Import fetchProducts
-import { ShoppingCart, Trash, ChevronRight, Plus, Minus } from "lucide-react";
+import { fetchProducts } from "../Redux/propertySlice";
+import { createRazorpayOrder, validatePayment } from '../Redux/PaymentSlice';
+import { ShoppingCart, Trash, ChevronRight, Plus, Minus } from 'lucide-react';
 import Footer from "../pages/Footer";
+import { useNavigate } from 'react-router-dom';
 
 const Cart = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { cartItems, totalAmount, loading, error } = useSelector((state) => state.cart);
-  const { products } = useSelector((state) => state.property); // Get products from Redux
+  const { products } = useSelector((state) => state.property);
   const user = useSelector((state) => state.auth.user);
 
-  // Fetch cart items and products on component load
   useEffect(() => {
     if (user?.user_id) {
-      dispatch(fetchCartItems(user.user_id)); // Fetch cart items
+      dispatch(fetchCartItems(user.user_id));
     }
-    dispatch(fetchProducts()); // Fetch products data
+    dispatch(fetchProducts());
   }, [dispatch, user]);
 
-  // Add images from products to cart items
+  useEffect(() => {
+    const loadRazorpayScript = () => {
+      if (!document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]')) {
+        const script = document.createElement('script');
+        script.src = "https://checkout.razorpay.com/v1/checkout.js";
+        script.async = true;
+        document.body.appendChild(script);
+      }
+    };
+    loadRazorpayScript();
+  }, []);
+
   const mergedCartItems = cartItems.map((item) => {
-    const product = products.find((p) => p.id === item.product_id || p.title === item.title); // Match by product_id or title
+    const product = products.find((p) => p.id === item.product_id || p.title === item.title);
     return {
       ...item,
-      images: product?.images || [], // Use product images if available
+      images: product?.images || [],
     };
   });
 
-  // Handle quantity update
   const handleUpdateQuantity = useCallback(
     (cartId, action) => {
       const currentItem = cartItems.find((item) => item.id === cartId);
@@ -49,7 +61,6 @@ const Cart = () => {
     [cartItems, dispatch]
   );
 
-  // Handle removing an item
   const handleRemoveItem = useCallback(
     (cartId) => {
       dispatch(removeCartItem(cartId));
@@ -57,10 +68,97 @@ const Cart = () => {
     [dispatch]
   );
 
-  // Handle clearing the cart
   const handleClearCart = () => {
     if (user?.user_id) {
       dispatch(clearUserCart(user.user_id));
+    }
+  };
+
+  const handleCheckout = async () => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
+    try {
+      const orderData = {
+        amount: totalAmount * 100,
+        currency: "INR",
+        receipt: `receipt_${Date.now()}`,
+        user_id: user.user_id,
+        items: cartItems.map(item => ({
+          product_id: item.product_id,
+          quantity: item.quantity,
+          price: item.price
+        }))
+      };
+
+      const orderResult = await dispatch(createRazorpayOrder(orderData)).unwrap();
+
+      if (!orderResult || !orderResult.id) {
+        throw new Error('Failed to create order');
+      }
+
+      const options = {
+        key: "rzp_test_suGlReUubwbXnb",
+        amount: orderResult.amount,
+        currency: orderResult.currency,
+        name: "Cart Checkout",
+        description: `Payment for ${cartItems.length} items`,
+        order_id: orderResult.id,
+        handler: async (response) => {
+          try {
+            const paymentData = {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              amount: orderResult.amount,
+              currency: "INR",
+              user_id: user.user_id,
+              items: orderData.items
+            };
+
+            const validationResult = await dispatch(validatePayment(paymentData)).unwrap();
+
+            if (validationResult.msg === 'Payment validation successful and reservation created') {
+              await dispatch(clearUserCart(user.user_id));
+              alert('Payment successful! Your order has been placed.');
+              navigate('/orders');
+            } else {
+              console.error('Unexpected validation response:', validationResult);
+              throw new Error('Payment validation failed');
+            }
+          } catch (error) {
+            console.error('Payment verification failed:', error);
+            alert(error.response?.data?.msg || 'Payment verification failed. Please contact support.');
+            // Don't clear cart if payment failed
+          }
+        },
+        modal: {
+          ondismiss: function() {
+            console.log('Checkout modal closed');
+          }
+        },
+        prefill: {
+          name: user.name || "",
+          email: user.email || "",
+          contact: user.phone || ""
+        },
+        theme: {
+          color: "#f59e0b"
+        }
+      };
+
+      const razorpay = new window.Razorpay(options);
+      razorpay.on('payment.failed', function(response) {
+        console.error('Payment failed:', response.error);
+        alert(`Payment failed: ${response.error.description}`);
+      });
+      razorpay.open();
+
+    } catch (error) {
+      console.error('Error initiating payment:', error);
+      alert(error.response?.data?.msg || 'Failed to initiate payment. Please try again.');
     }
   };
 
@@ -92,8 +190,8 @@ const Cart = () => {
                   <img
                     src={
                       item.images.length > 0
-                        ? item.images[0] // Use the first image in the array
-                        : "https://res.cloudinary.com/bazeercloud/image/upload/v1736018602/Ivry_Door_with_open-Photoroom_de4e98.png" // Default placeholder
+                        ? item.images[0]
+                        : "https://res.cloudinary.com/bazeercloud/image/upload/v1736018602/Ivry_Door_with_open-Photoroom_de4e98.png"
                     }
                     alt={item.title}
                     className="w-20 h-20 object-cover rounded-lg"
@@ -149,7 +247,10 @@ const Cart = () => {
               >
                 Clear Cart
               </button>
-              <button className="px-6 py-3 bg-yellow-500 text-black font-semibold rounded-md hover:bg-yellow-400 transition-colors flex items-center gap-2">
+              <button 
+                className="px-6 py-3 bg-yellow-500 text-black font-semibold rounded-md hover:bg-yellow-400 transition-colors flex items-center gap-2"
+                onClick={handleCheckout}
+              >
                 Proceed to Checkout
                 <ChevronRight className="w-5 h-5" />
               </button>
@@ -164,3 +265,4 @@ const Cart = () => {
 };
 
 export default Cart;
+

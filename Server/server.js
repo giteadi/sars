@@ -10,7 +10,7 @@ const adminRoutes = require("./Routes/adminRoute");
 const cloudinaryConnect = require("./Config/cloudinary");
 // const chekRoutes = require('./Routes/chekRoutes');
 // const reserveRoutes = require('./Routes/reservationRoutes');
-// const paymentRoutes = require('./Routes/paymentRoutes');
+const paymentRoutes = require('./Routes/paymentRoutes');
 const cartRoutes=require("./Routes/cartRoutes");
 cloudinaryConnect();
 
@@ -30,7 +30,7 @@ app.use('/api/v1',cartRoutes);
 // app.use("/api/v1/testimonial",testimonialRoutes);
 // app.use("/api/v1/check", chekRoutes);
 // app.use("/api/v1/reservation", reserveRoutes);
-// app.use("/api/v1/payments",paymentRoutes);
+app.use("/api/v1/payments",paymentRoutes);
 
 
 const PORT = process.env.PORT || 3000;
