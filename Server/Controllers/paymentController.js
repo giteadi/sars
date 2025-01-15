@@ -92,7 +92,7 @@ exports.validatePayment = async (req, res) => {
                 [
                   product_id,
                   user_id,
-                  amount / 100, // Convert paise to rupees
+                  amount/100, 
                   "success",
                   "Razorpay",
                   razorpay_payment_id,

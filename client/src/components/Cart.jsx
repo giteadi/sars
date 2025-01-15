@@ -149,14 +149,14 @@ const Cart = () => {
               razorpay_signature: response.razorpay_signature,
               user_id: user.user_id,
               product_ids: validItems.map(item => item.product_id.toString()),
-              amount: orderResult.order.amount // Add the amount from the order result
+              amount: orderResult.order.amount 
             };
 
             const validation = await dispatch(validatePayment(paymentData)).unwrap();
             if (validation.msg) {
               await dispatch(clearUserCart(user.user_id));
               toast.success('Payment successful! Your order has been placed.');
-              navigate('/orders');
+           
             }
           } catch (err) {
             console.error('Payment verification failed:', err);
