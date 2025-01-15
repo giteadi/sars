@@ -8,6 +8,7 @@ import Navbar from '../components/NavBar';
 import { fetchProductById } from '../Redux/propertySlice';
 import { addItemToCart, updateCartItemQuantity } from '../Redux/CartSlice';
 import toast from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
 export default function SingleProduct() {
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -17,6 +18,15 @@ export default function SingleProduct() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [addingToCart, setAddingToCart] = useState(false);
   const user = useSelector((state) => state.auth.user);
+  const [paymentError, setPaymentError] = useState(null);
+
+  useEffect(() => {
+    if (paymentError) {
+      console.log(err);
+      toast.error(paymentError);
+      setPaymentError(null);
+    }
+  }, [paymentError]);
 
   useEffect(() => {
     if (id) {
@@ -38,79 +48,82 @@ export default function SingleProduct() {
 
   const handleBuyNow = async () => {
     if (!user) {
-      nav('/login');
+      toast.error("Please login to continue");
+      nav("/login");
+      return;
+    }
+
+    if (!product?.product) {
+      toast.error("Product information not available");
       return;
     }
 
     try {
       const orderData = {
-        amount: Number(product.product.price) * 100,
+        amount: Math.round(Number(product.product.price)), // Ensure whole number
         currency: "INR",
         receipt: `receipt_${Date.now()}`,
         user_id: user.user_id,
-        product_id: id
+        product_ids: [id],
+        quantities: [1]
       };
-
+      
       const orderResult = await dispatch(createRazorpayOrder(orderData)).unwrap();
-
-      if (!orderResult || !orderResult.id) {
-        throw new Error('Failed to create order');
+      
+      if (!orderResult?.order?.id) {
+        toast.error("Failed to create order");
+        return;
       }
 
       const options = {
         key: "rzp_test_suGlReUubwbXnb",
-        amount: orderResult.amount,
-        currency: orderResult.currency,
+        amount: orderResult.order.amount,
+        currency: orderResult.order.currency,
         name: "Product Purchase",
         description: `Payment for ${product.product.title}`,
-        order_id: orderResult.id,
+        order_id: orderResult.order.id,
         handler: async (response) => {
           try {
             const paymentData = {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
-              amount: orderResult.amount,
-              currency: "INR",
               user_id: user.user_id,
-              product_id: id
+              product_ids: [id],
+              amount: orderResult.order.amount,
+              currency: orderResult.order.currency
             };
 
-            const validationResult = await dispatch(validatePayment(paymentData)).unwrap();
-
-            if (validationResult.msg === 'Payment validation successful and reservation created') {
-              toast.success('Payment successful! Order confirmed.');
+            const validation = await dispatch(validatePayment(paymentData)).unwrap();
+            if (validation.msg) {
+              toast.success("Payment successful!");
               
-            } else {
-              throw new Error('Payment validation failed');
             }
-          } catch (error) {
-            console.error('Payment verification failed:', error);
-            alert('Payment verification failed. Please contact support.');
+          } catch (err) {
+            console.log(err);
+            toast.error(err.message || "Payment validation failed");
           }
         },
         prefill: {
-          name: user.name || "",
-          email: user.email || "",
-          contact: user.phone || ""
+          name: user.name,
+          email: user.email
         },
         theme: {
-          color: "#f59e0b"
+          color: "#EAB308" // Yellow-500 color
         }
       };
 
-      const razorpay = new window.Razorpay(options);
-      razorpay.on('payment.failed', function(response) {
-        alert('Payment failed. Please try again.');
-        console.error('Payment failed:', response.error);
+      const rzp = new window.Razorpay(options);
+      rzp.on('payment.failed', (response) => {
+        toast.error("Payment failed. Please try again.");
       });
-      razorpay.open();
-
-    } catch (error) {
-      console.error('Error initiating payment:', error);
-      alert('Failed to initiate payment. Please try again.');
+      rzp.open();
+    } catch (err) {
+      console.log(err)
+      toast.error(err.message || "Failed to process the order");
     }
   };
+  
 
   const handleAddToCart = async () => {
     if (!product || !user) return;
@@ -130,10 +143,10 @@ export default function SingleProduct() {
           price: product.product.price
         })).unwrap();
       }
-      alert('Added to cart successfully!');
+      toast.success('Added to cart successfully!');
     } catch (error) {
       console.error('Failed to add to cart:', error);
-      alert('Failed to add to cart. Please try again.');
+      toast.error('Failed to add to cart. Please try again.');
     } finally {
       setAddingToCart(false);
     }
@@ -158,6 +171,7 @@ export default function SingleProduct() {
 
   return (
     <div className="min-h-screen bg-black text-white">
+      <Toaster position="top-center" toastOptions={{ duration: 3000 }} />
       <Navbar />
       <main className="max-w-6xl mx-auto pt-40">
         {/* Rest of your existing JSX remains the same */}
@@ -181,7 +195,7 @@ export default function SingleProduct() {
                       selectedImage === index ? 'border-yellow-500' : 'border-gray-700'
                     }`}
                   >
-                    <img src={img} alt={`Thumbnail ${index + 1}`} className="object-cover w-full h-full" />
+                    <img src={img || "/placeholder.svg"} alt={`Thumbnail ${index + 1}`} className="object-cover w-full h-full" />
                   </button>
                 ))
               ) : (

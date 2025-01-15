@@ -11,6 +11,8 @@ import { createRazorpayOrder, validatePayment } from '../Redux/PaymentSlice';
 import { ShoppingCart, Trash, ChevronRight, Plus, Minus } from 'lucide-react';
 import Footer from "../pages/Footer";
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -76,89 +78,86 @@ const Cart = () => {
 
   const handleCheckout = async () => {
     if (!user) {
+      toast.error("Please login to continue");
       navigate('/login');
       return;
     }
 
+    if (!cartItems.length) {
+      toast.error("Your cart is empty");
+      return;
+    }
+
     try {
+      // Format cart items to match backend expectation
+      const items = cartItems.map(item => ({
+        quantity: Number(item.quantity),
+        price: Number(item.price)
+      }));
+
       const orderData = {
-        amount: totalAmount * 100,
+        amount: Math.round(totalAmount), // Ensure whole number
         currency: "INR",
         receipt: `receipt_${Date.now()}`,
         user_id: user.user_id,
-        items: cartItems.map(item => ({
-          product_id: item.product_id,
-          quantity: item.quantity,
-          price: item.price
-        }))
+        items: items // Changed from product_ids and quantities to items array
       };
 
-      const orderResult = await dispatch(createRazorpayOrder(orderData)).unwrap();
+      console.log("Sending order data:", orderData);
 
-      if (!orderResult || !orderResult.id) {
+      const orderResult = await dispatch(createRazorpayOrder(orderData)).unwrap();
+    
+      if (!orderResult?.order?.id) {
         throw new Error('Failed to create order');
       }
 
       const options = {
         key: "rzp_test_suGlReUubwbXnb",
-        amount: orderResult.amount,
-        currency: orderResult.currency,
+        amount: orderResult.order.amount,
+        currency: orderResult.order.currency,
         name: "Cart Checkout",
-        description: `Payment for ${cartItems.length} items`,
-        order_id: orderResult.id,
+        description: `Payment for ${items.length} items`,
+        order_id: orderResult.order.id,
         handler: async (response) => {
           try {
             const paymentData = {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
-              amount: orderResult.amount,
-              currency: "INR",
               user_id: user.user_id,
-              items: orderData.items
+              items: items // Include items in payment validation
             };
 
-            const validationResult = await dispatch(validatePayment(paymentData)).unwrap();
-
-            if (validationResult.msg === 'Payment validation successful and reservation created') {
+            const validation = await dispatch(validatePayment(paymentData)).unwrap();
+            if (validation.msg) {
               await dispatch(clearUserCart(user.user_id));
-              alert('Payment successful! Your order has been placed.');
+              toast.success('Payment successful! Your order has been placed.');
               navigate('/orders');
-            } else {
-              console.error('Unexpected validation response:', validationResult);
-              throw new Error('Payment validation failed');
             }
-          } catch (error) {
-            console.error('Payment verification failed:', error);
-            alert(error.response?.data?.msg || 'Payment verification failed. Please contact support.');
-            // Don't clear cart if payment failed
-          }
-        },
-        modal: {
-          ondismiss: function() {
-            console.log('Checkout modal closed');
+          } catch (err) {
+            console.error('Payment verification failed:', err);
+            toast.error(err.message || 'Payment verification failed');
           }
         },
         prefill: {
           name: user.name || "",
-          email: user.email || "",
-          contact: user.phone || ""
+          email: user.email || ""
         },
         theme: {
-          color: "#f59e0b"
+          color: "#EAB308"
         }
       };
 
-      const razorpay = new window.Razorpay(options);
-      razorpay.on('payment.failed', function(response) {
+      const rzp = new window.Razorpay(options);
+      rzp.on('payment.failed', function(response) {
         console.error('Payment failed:', response.error);
-        alert(`Payment failed: ${response.error.description}`);
+        toast.error(`Payment failed: ${response.error.description}`);
       });
-      razorpay.open();
+      rzp.open();
 
     } catch (error) {
       console.error('Error initiating payment:', error);
-      alert(error.response?.data?.msg || 'Failed to initiate payment. Please try again.');
+      toast.error(error.message || 'Failed to initiate payment');
     }
   };
 
@@ -172,6 +171,7 @@ const Cart = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-black text-white">
+      <Toaster position="top-center" toastOptions={{ duration: 3000 }} />
       <header className="p-4 border-b border-yellow-500/20">
         <div className="text-yellow-500 font-bold flex items-center gap-2">
           <ShoppingCart className="w-6 h-6" />
@@ -265,4 +265,3 @@ const Cart = () => {
 };
 
 export default Cart;
-

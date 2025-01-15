@@ -7,68 +7,67 @@ if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_SECRET) {
   throw new Error("Missing Razorpay environment variables");
 }
 
-// Create an order
-exports.createOrder = (req, res) => {
+exports.createOrder = async (req, res) => {
   const razorpay = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
     key_secret: process.env.RAZORPAY_SECRET,
   });
 
-  const {
-    amount,
-    currency,
-    receipt,
-    user_id,
-    product_id, 
-  } = req.body;
+  try {
+    const { amount, currency, receipt, user_id, product_ids, quantities } = req.body;
+    console.log("Received order data:", req.body);
 
-  // Validate request body
-  if (!amount || typeof amount !== "number" || amount <= 0) {
-    return res.status(400).json({ msg: "Invalid amount" });
-  }
-  if (!currency || typeof currency !== "string") {
-    return res.status(400).json({ msg: "Invalid currency" });
-  }
-  if (!receipt || typeof receipt !== "string") {
-    return res.status(400).json({ msg: "Invalid receipt ID" });
-  }
-
-  // Fetch product details to get the total price for the user
-  const getProductQuery = "SELECT price FROM products WHERE id = ?";
-  db.query(getProductQuery, [product_id], (err, results) => {
-    if (err) return res.status(500).json({ msg: "Error fetching product details" });
-
-    if (results.length === 0) {
-      return res.status(404).json({ msg: "Product not found" });
+    if (!amount || !user_id || !Array.isArray(product_ids) || product_ids.length === 0) {
+      return res.status(400).json({ msg: "Missing required fields" });
     }
 
-    const productPrice = results[0].price;
+    // Convert amount to paise if in INR
+    const amountInPaise = currency === 'INR' ? Math.round(amount * 100) : amount;
 
-    // Create Razorpay order options
-    const options = { amount: productPrice * 100, currency, receipt };
-
-    razorpay.orders.create(options, (err, order) => {
-      if (err) {
-        console.error("Error in createOrder:", err.message);
-        return res.status(500).json({ msg: "Order creation failed" });
+    // Create Razorpay order
+    const options = {
+      amount: amountInPaise,
+      currency,
+      receipt,
+      notes: {
+        user_id: user_id.toString(),
+        products: product_ids.join(',')
       }
+    };
 
-      // Return Razorpay order details to front-end
-      res.status(200).json(order);
+    const order = await razorpay.orders.create(options);
+    res.status(200).json({ 
+      order,
+      totalPrice: amount,
+      msg: "Order created successfully"
     });
-  });
+
+  } catch (error) {
+    console.error("Order creation error:", error);
+    res.status(500).json({ 
+      msg: "Failed to create order",
+      error: error.message 
+    });
+  }
 };
 
-// Validate payment
-exports.validatePayment = (req, res) => {
-  const { razorpay_order_id, razorpay_payment_id, razorpay_signature, amount, currency, user_id, product_id } = req.body;
-
-  // Validate input
-  if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-    return res.status(400).json({ msg: "Invalid payment validation parameters" });
-  }
-
+// Validate Razorpay payment
+exports.validatePayment = async (req, res) => {
   try {
+    const { 
+      razorpay_order_id, 
+      razorpay_payment_id, 
+      razorpay_signature,
+      amount,
+      user_id,
+      product_ids
+    } = req.body;
+
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      return res.status(400).json({ msg: "Missing payment details" });
+    }
+
+    // Verify signature
     const sha = crypto.createHmac("sha256", process.env.RAZORPAY_SECRET);
     sha.update(`${razorpay_order_id}|${razorpay_payment_id}`);
     const digest = sha.digest("hex");
@@ -77,37 +76,59 @@ exports.validatePayment = (req, res) => {
       return res.status(400).json({ msg: "Invalid payment signature" });
     }
 
-    // Payment is valid, proceed to insert the reservation
-    const reservationQuery = `
-      INSERT INTO reservation 
-      (product_id, user_id, total_price, payment_status, payment_method, payment_id, transaction_id, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
-    `;
-    const reservationValues = [
-      product_id,
-      user_id,
-      amount / 100, 
-      "success", 
-      "Razorpay", 
-      razorpay_order_id, 
-      razorpay_payment_id, 
-    ];
+    // Begin transaction
+    await new Promise((resolve, reject) => {
+      db.beginTransaction(async (err) => {
+        if (err) reject(err);
 
-    db.query(reservationQuery, reservationValues, (err, result) => {
-      if (err) {
-        console.error("Error inserting reservation:", err.message);
-        return res.status(500).json({ msg: "Failed to create reservation" });
-      }
+        try {
+          // Insert reservations
+          for (const product_id of product_ids) {
+            await new Promise((resolve, reject) => {
+              db.query(
+                `INSERT INTO reservation 
+                (product_id, user_id, total_price, payment_status, payment_method, payment_id, transaction_id) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                [
+                  product_id,
+                  user_id,
+                  amount / 100, // Convert paise to rupees
+                  "success",
+                  "Razorpay",
+                  razorpay_payment_id,
+                  razorpay_order_id
+                ],
+                (err) => {
+                  if (err) reject(err);
+                  resolve();
+                }
+              );
+            });
+          }
 
-      // Return success response
-      res.status(200).json({
-        msg: "Payment validation successful and reservation created",
-        orderId: razorpay_order_id,
-        paymentId: razorpay_payment_id,
+          // Commit transaction
+          db.commit((err) => {
+            if (err) reject(err);
+            resolve();
+          });
+        } catch (error) {
+          db.rollback(() => reject(error));
+        }
       });
     });
-  } catch (err) {
-    console.error("Error in validatePayment:", err.message);
-    res.status(500).json({ msg: "Internal Server Error" });
+
+    res.status(200).json({
+      msg: "Payment validated and reservations created",
+      orderId: razorpay_order_id,
+      paymentId: razorpay_payment_id
+    });
+
+  } catch (error) {
+    console.error("Payment validation error:", error);
+    res.status(500).json({ 
+      msg: "Payment validation failed",
+      error: error.message 
+    });
   }
 };
+
