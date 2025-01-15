@@ -13,6 +13,7 @@ import Footer from "../pages/Footer";
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Toaster } from 'react-hot-toast';
+import Spinner from "./Spinner";
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -188,7 +189,7 @@ const Cart = () => {
   };
 
   if (loading) {
-    return <div className="text-center py-8">Loading...</div>;
+    return <Spinner/>
   }
 
   if (error) {
