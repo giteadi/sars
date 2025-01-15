@@ -62,7 +62,7 @@ exports.validatePayment = async (req, res) => {
       user_id,
       product_ids
     } = req.body;
-
+  console.log("validation body->" , req.body);
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
       return res.status(400).json({ msg: "Missing payment details" });
     }

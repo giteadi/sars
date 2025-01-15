@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   fetchCartItems,
@@ -17,9 +17,10 @@ import { Toaster } from 'react-hot-toast';
 const Cart = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { cartItems, totalAmount, loading, error } = useSelector((state) => state.cart);
+  const { cartItems, loading, error } = useSelector((state) => state.cart);
   const { products } = useSelector((state) => state.property);
   const user = useSelector((state) => state.auth.user);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     if (user?.user_id) {
@@ -41,10 +42,14 @@ const Cart = () => {
   }, []);
 
   const mergedCartItems = cartItems.map((item) => {
-    const product = products.find((p) => p.id === item.product_id || p.title === item.title);
+    const product = products.find((p) => p.id === item.id || p.title === item.title);
+    const productId = products.find((p) => p.id === item.id || p.title === item.title);
+    console.log("Product found:", product);
+    console.log("Product ID:", productId?.id);
     return {
       ...item,
       images: product?.images || [],
+      product_id: productId?.id // Store the correct product ID
     };
   });
 
@@ -76,6 +81,20 @@ const Cart = () => {
     }
   };
 
+  const totalAmount = mergedCartItems.reduce((total, item) => 
+    total + (Number(item.price) * Number(item.quantity)), 0);
+
+  const prepareOrderData = (validItems) => {
+    return {
+      amount: Math.round(totalAmount), // Ensure whole number
+      currency: "INR",
+      receipt: `receipt_${Date.now()}`,
+      user_id: user.user_id,
+      product_ids: validItems.map(item => item.product_id.toString()), // Use the correct product_id
+      quantities: validItems.map(item => Number(item.quantity))
+    };
+  };
+
   const handleCheckout = async () => {
     if (!user) {
       toast.error("Please login to continue");
@@ -83,30 +102,34 @@ const Cart = () => {
       return;
     }
 
-    if (!cartItems.length) {
+    if (!mergedCartItems.length) {
       toast.error("Your cart is empty");
       return;
     }
 
+    setIsProcessing(true);
+
     try {
-      // Format cart items to match backend expectation
-      const items = cartItems.map(item => ({
-        quantity: Number(item.quantity),
-        price: Number(item.price)
-      }));
+      // Filter valid items and ensure they have the correct product_id
+      const validItems = mergedCartItems.filter(item => 
+        item.product_id && // Check for correct product_id
+        item.quantity && 
+        !isNaN(item.price) && 
+        item.price > 0
+      );
 
-      const orderData = {
-        amount: Math.round(totalAmount), // Ensure whole number
-        currency: "INR",
-        receipt: `receipt_${Date.now()}`,
-        user_id: user.user_id,
-        items: items // Changed from product_ids and quantities to items array
-      };
+      if (validItems.length === 0) {
+        toast.error('No valid items found in cart');
+        return;
+      }
 
+      console.log("Valid items for checkout:", validItems);
+      const orderData = prepareOrderData(validItems);
       console.log("Sending order data:", orderData);
 
       const orderResult = await dispatch(createRazorpayOrder(orderData)).unwrap();
-    
+      console.log("Order result:", orderResult);
+
       if (!orderResult?.order?.id) {
         throw new Error('Failed to create order');
       }
@@ -116,7 +139,7 @@ const Cart = () => {
         amount: orderResult.order.amount,
         currency: orderResult.order.currency,
         name: "Cart Checkout",
-        description: `Payment for ${items.length} items`,
+        description: `Payment for ${validItems.length} items`,
         order_id: orderResult.order.id,
         handler: async (response) => {
           try {
@@ -125,7 +148,8 @@ const Cart = () => {
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
               user_id: user.user_id,
-              items: items // Include items in payment validation
+              product_ids: validItems.map(item => item.product_id.toString()),
+              amount: orderResult.order.amount // Add the amount from the order result
             };
 
             const validation = await dispatch(validatePayment(paymentData)).unwrap();
@@ -158,6 +182,8 @@ const Cart = () => {
     } catch (error) {
       console.error('Error initiating payment:', error);
       toast.error(error.message || 'Failed to initiate payment');
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -188,11 +214,7 @@ const Cart = () => {
               <div key={item.id} className="flex justify-between items-center bg-gray-800 p-4 rounded-lg">
                 <div className="flex items-center gap-4">
                   <img
-                    src={
-                      item.images.length > 0
-                        ? item.images[0]
-                        : "https://res.cloudinary.com/bazeercloud/image/upload/v1736018602/Ivry_Door_with_open-Photoroom_de4e98.png"
-                    }
+                    src={item.images.length > 0 ? item.images[0] : "https://res.cloudinary.com/bazeercloud/image/upload/v1736018602/Ivry_Door_with_open-Photoroom_de4e98.png"}
                     alt={item.title}
                     className="w-20 h-20 object-cover rounded-lg"
                   />
@@ -242,16 +264,18 @@ const Cart = () => {
 
             <div className="mt-6 flex justify-between">
               <button
-                className="px-6 py-3 bg-yellow-500 text-black font-semibold rounded-md hover:bg-yellow-400 transition-colors"
+                className="px-6 py-3 bg-yellow-500 text-black font-semibold rounded-md hover:bg-yellow-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={handleClearCart}
+                disabled={isProcessing}
               >
                 Clear Cart
               </button>
-              <button 
-                className="px-6 py-3 bg-yellow-500 text-black font-semibold rounded-md hover:bg-yellow-400 transition-colors flex items-center gap-2"
+              <button
+                className="px-6 py-3 bg-yellow-500 text-black font-semibold rounded-md hover:bg-yellow-400 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={handleCheckout}
+                disabled={isProcessing}
               >
-                Proceed to Checkout
+                {isProcessing ? 'Processing...' : 'Proceed to Checkout'}
                 <ChevronRight className="w-5 h-5" />
               </button>
             </div>
@@ -265,3 +289,4 @@ const Cart = () => {
 };
 
 export default Cart;
+
