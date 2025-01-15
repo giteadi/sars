@@ -126,13 +126,15 @@ const ProductPage = () => {
       <img
         src={product.images[0]} // Display the first image
         alt={`${product.title} - 1`}
-        className="w-full h-48 object-contain rounded-lg shadow-md" // Adjusted to avoid cutting off
+        className="w-full h-48 object-contain rounded-lg shadow-md"
+        loading="lazy"
       />
     ) : (
       <img
         src={defaultImage}
         alt={product.title}
         className="w-full h-48 object-contain rounded-lg shadow-md" // Adjusted to avoid cutting off
+        loading="lazy"
       />
     )}
   </div>

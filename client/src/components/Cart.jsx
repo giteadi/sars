@@ -218,6 +218,7 @@ const Cart = () => {
                     src={item.images.length > 0 ? item.images[0] : "https://res.cloudinary.com/bazeercloud/image/upload/v1736018602/Ivry_Door_with_open-Photoroom_de4e98.png"}
                     alt={item.title}
                     className="w-20 h-20 object-cover rounded-lg"
+                    loading="lazy"
                   />
                   <div className="space-y-2">
                     <h3 className="font-semibold">{item.title}</h3>

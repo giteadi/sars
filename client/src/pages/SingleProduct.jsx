@@ -184,6 +184,7 @@ export default function SingleProduct() {
                 alt={product.product.title || 'Product Image'}
                 className="object-contain w-full h-full"
                 style={{ maxHeight: '600px' }}
+                loading='lazy'
               />
             </div>
             <div className="flex gap-2 overflow-x-auto pb-2">
@@ -196,7 +197,8 @@ export default function SingleProduct() {
                       selectedImage === index ? 'border-yellow-500' : 'border-gray-700'
                     }`}
                   >
-                    <img src={img || "/placeholder.svg"} alt={`Thumbnail ${index + 1}`} className="object-cover w-full h-full" />
+                    <img src={img || "/placeholder.svg"} alt={`Thumbnail ${index + 1}`} className="object-cover w-full h-full"
+                    loading='lazy' />
                   </button>
                 ))
               ) : (
