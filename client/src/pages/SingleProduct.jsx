@@ -9,6 +9,7 @@ import { fetchProductById } from '../Redux/propertySlice';
 import { addItemToCart, updateCartItemQuantity } from '../Redux/CartSlice';
 import toast from 'react-hot-toast';
 import { Toaster } from 'react-hot-toast';
+import Spinner from '../components/Spinner';
 export default function SingleProduct() {
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -153,7 +154,7 @@ export default function SingleProduct() {
   };
 
   if (loading) {
-    return <div className="min-h-screen bg-black text-white flex items-center justify-center">Loading...</div>;
+   return <Spinner/>
   }
 
   if (error) {

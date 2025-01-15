@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import FAQ from "./FAQ";
 import Navbar from "../components/NavBar";
 import { fetchProducts } from '../Redux/propertySlice';
+import Spinner from "../components/Spinner";
 
 const ProductPage = () => {
   const dispatch = useDispatch();
@@ -41,9 +42,7 @@ const ProductPage = () => {
 
   if (loading) {
     return (
-      <div className="w-full bg-black text-white flex items-center justify-center">
-        <div className="text-2xl">Loading...</div>
-      </div>
+     <Spinner/>
     );
   }
 
