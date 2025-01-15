@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Toaster } from 'react-hot-toast';
 import Spinner from "./Spinner";
-
+import { Link } from "react-router-dom";
 const Cart = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -199,11 +199,12 @@ const Cart = () => {
   return (
     <div className="min-h-screen flex flex-col bg-black text-white">
       <Toaster position="top-center" toastOptions={{ duration: 3000 }} />
-      <header className="p-4 border-b border-yellow-500/20">
+      <header className="p-4 border-b border-yellow-500/20 flex justify-between">
         <div className="text-yellow-500 font-bold flex items-center gap-2">
           <ShoppingCart className="w-6 h-6" />
           CART
         </div>
+        <Link to='/' className="text-yellow-500 font-bold flex items-center gap-2">Home</Link>
       </header>
 
       <main className="flex-grow max-w-6xl mx-auto p-4">
