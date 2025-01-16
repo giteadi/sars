@@ -83,18 +83,20 @@ const Navbar = () => {
 
         {/* Icons */}
         <div className="flex items-center space-x-6">
-          {/* Cart */}
-          <button
-            onClick={handleCartClick}
-            className="p-2 hover:text-amber-400 transition-colors relative"
-          >
-            <FaShoppingCart className="w-6 h-6" />
-            {cartItems.length > 0 && (
-              <span className="absolute -top-2 -right-2 bg-amber-400 text-black text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                {cartItems.length}
-              </span>
-            )}
-          </button>
+          {/* Cart - Only shown when authenticated */}
+          {isAuthenticated && (
+            <button
+              onClick={handleCartClick}
+              className="p-2 hover:text-amber-400 transition-colors relative"
+            >
+              <FaShoppingCart className="w-6 h-6" />
+              {cartItems.length > 0 && (
+                <span className="absolute -top-2 -right-2 bg-amber-400 text-black text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  {cartItems.length}
+                </span>
+              )}
+            </button>
+          )}
 
           {/* User Dropdown */}
           <div className="relative flex items-center space-x-2">
@@ -151,3 +153,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
