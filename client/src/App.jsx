@@ -20,8 +20,8 @@ function App() {
         <Route path='/blogs' element={<BlogPage/>}/>
         <Route path='/singleProduct/:id' element={<SingleProduct/>}/>
         <Route path='/cart' element={<Cart/>}/>
-        <Route path='/aboutus' element={<AboutUs/>}/>
-        <Route path='/contactus' element={<ContactUs/>}/>
+        <Route path='/about' element={<AboutUs/>}/>
+        <Route path='/contact' element={<ContactUs/>}/>
         <Route path='/singleblog/:id' element={<SingleBlogPage/>}/>
       </Routes>
     </div>

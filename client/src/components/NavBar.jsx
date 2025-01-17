@@ -70,7 +70,7 @@ const Navbar = () => {
             isMenuOpen ? 'flex' : 'hidden'
           } absolute top-16 left-0 right-0 bg-zinc-950 md:relative md:flex-row md:space-x-8 md:top-0`}
         >
-          {['HOME', 'PRODUCT', 'BLOGS'].map((item) => (
+          {['HOME', 'PRODUCT', 'BLOGS', 'CONTACT', 'ABOUT'].map((item) => (
             <Link
               key={item}
               to={item === 'HOME' ? '/' : `/${item.toLowerCase()}`}

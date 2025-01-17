@@ -55,7 +55,7 @@ const BlogPage = () => {
                   <p className="text-sm text-gray-300 mb-2">{post.date}</p>
                   <p className="text-lg text-yellow-400 mb-4">{post.excerpt}</p>
                   <Link
-                    to={`/blog/${post.id}`}
+                    to={`/singleblog/${post.id}`}
                     className="bg-yellow-400 hover:bg-yellow-300 text-black font-semibold py-2 px-4 rounded-full w-full transition-colors"
                   >
                     Read More
