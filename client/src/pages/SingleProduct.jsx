@@ -1,4 +1,7 @@
+'use client'
+
 import React, { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { ShoppingCart, Star, Info, Ruler, PenTool } from 'lucide-react';
@@ -10,6 +13,7 @@ import { addItemToCart, updateCartItemQuantity } from '../Redux/CartSlice';
 import toast from 'react-hot-toast';
 import { Toaster } from 'react-hot-toast';
 import Spinner from '../components/Spinner';
+
 export default function SingleProduct() {
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -23,7 +27,7 @@ export default function SingleProduct() {
 
   useEffect(() => {
     if (paymentError) {
-      console.log(err);
+      console.log(paymentError);
       toast.error(paymentError);
       setPaymentError(null);
     }
@@ -61,7 +65,7 @@ export default function SingleProduct() {
 
     try {
       const orderData = {
-        amount: Math.round(Number(product.product.price)), // Ensure whole number
+        amount: Math.round(Number(product.product.price)),
         currency: "INR",
         receipt: `receipt_${Date.now()}`,
         user_id: user.user_id,
@@ -98,7 +102,6 @@ export default function SingleProduct() {
             const validation = await dispatch(validatePayment(paymentData)).unwrap();
             if (validation.msg) {
               toast.success("Payment successful!");
-              
             }
           } catch (err) {
             console.log(err);
@@ -110,7 +113,7 @@ export default function SingleProduct() {
           email: user.email
         },
         theme: {
-          color: "#EAB308" // Yellow-500 color
+          color: "#EAB308"
         }
       };
 
@@ -120,11 +123,10 @@ export default function SingleProduct() {
       });
       rzp.open();
     } catch (err) {
-      console.log(err)
+      console.log(err);
       toast.error(err.message || "Failed to process the order");
     }
   };
-  
 
   const handleAddToCart = async () => {
     if (!product || !user) return;
@@ -154,7 +156,7 @@ export default function SingleProduct() {
   };
 
   if (loading) {
-   return <Spinner/>
+    return <Spinner />;
   }
 
   if (error) {
@@ -174,40 +176,67 @@ export default function SingleProduct() {
     <div className="min-h-screen bg-black text-white">
       <Toaster position="top-center" toastOptions={{ duration: 3000 }} />
       <Navbar />
-      <main className="max-w-6xl mx-auto pt-40">
-        {/* Rest of your existing JSX remains the same */}
+      <motion.main 
+        className="max-w-6xl mx-auto pt-40 px-4"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
         <div className="grid md:grid-cols-2 gap-8 mb-12">
-          <div className="space-y-4">
+          <motion.div 
+            className="space-y-4"
+            initial={{ x: -50, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
             <div className="relative rounded-lg overflow-hidden border-2 border-yellow-500/20" style={{ minHeight: '400px', maxHeight: '600px', width: '100%' }}>
-              <img
+              <motion.img
                 src={product.images?.length > 0 ? product.images[selectedImage] : '/placeholder.svg'}
                 alt={product.product.title || 'Product Image'}
                 className="object-contain w-full h-full"
                 style={{ maxHeight: '600px' }}
                 loading='lazy'
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.3 }}
               />
             </div>
-            <div className="flex gap-2 overflow-x-auto pb-2">
+            <motion.div 
+              className="flex gap-2 overflow-x-auto pb-2"
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
               {product.images?.length > 0 ? (
                 product.images.map((img, index) => (
-                  <button
+                  <motion.button
                     key={index}
                     onClick={() => setSelectedImage(index)}
                     className={`w-20 h-20 border-2 rounded-lg overflow-hidden relative flex-shrink-0 ${
                       selectedImage === index ? 'border-yellow-500' : 'border-gray-700'
                     }`}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
                   >
-                    <img src={img || "/placeholder.svg"} alt={`Thumbnail ${index + 1}`} className="object-cover w-full h-full"
-                    loading='lazy' />
-                  </button>
+                    <img 
+                      src={img || "/placeholder.svg"} 
+                      alt={`Thumbnail ${index + 1}`} 
+                      className="object-cover w-full h-full" 
+                      loading='lazy' 
+                    />
+                  </motion.button>
                 ))
               ) : (
                 <span>No images available</span>
               )}
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
-          <div className="space-y-6">
+          <motion.div 
+            className="space-y-6"
+            initial={{ x: 50, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
             <h1 className="text-2xl font-bold">{product.product.title}</h1>
             <div className="flex items-baseline gap-2">
               <span className="text-4xl font-bold text-yellow-500">
@@ -215,28 +244,40 @@ export default function SingleProduct() {
               </span>
             </div>
             <div className="flex gap-4">
-              <button 
+              <motion.button 
                 onClick={handleBuyNow}
                 className="px-6 py-2 bg-yellow-500 text-black font-semibold rounded-md hover:bg-yellow-400 transition-colors"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 Buy Now
-              </button>
-              <button
+              </motion.button>
+              <motion.button
                 onClick={handleAddToCart}
                 disabled={addingToCart}
                 className="px-6 py-2 bg-gray-700 text-white font-semibold rounded-md hover:bg-gray-600 transition-colors disabled:opacity-50"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 {addingToCart ? 'Adding...' : 'Add to Cart'}
-              </button>
+              </motion.button>
             </div>
-          </div>
+          </motion.div>
         </div>
 
-        {/* Product details sections */}
-        <section className="mb-12">
+        <motion.section 
+          className="mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
           <h2 className="text-2xl font-bold mb-6">Specifications</h2>
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="bg-yellow-500 p-6 rounded-lg">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <motion.div 
+              className="bg-yellow-500 p-6 rounded-lg"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+            >
               <div className="flex items-center gap-2 mb-4">
                 <Info className="w-6 h-6" />
                 <h3 className="font-semibold">Product details</h3>
@@ -246,8 +287,12 @@ export default function SingleProduct() {
                   <li key={index}>{desc}</li>
                 ))}
               </ul>
-            </div>
-            <div className="bg-yellow-500 p-6 rounded-lg">
+            </motion.div>
+            <motion.div 
+              className="bg-yellow-500 p-6 rounded-lg"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+            >
               <div className="flex items-center gap-2 mb-4">
                 <Ruler className="w-6 h-6" />
                 <h3 className="font-semibold">Dimensions</h3>
@@ -257,8 +302,12 @@ export default function SingleProduct() {
                   <li key={index}>{dim}</li>
                 ))}
               </ul>
-            </div>
-            <div className="bg-yellow-500 p-6 rounded-lg">
+            </motion.div>
+            <motion.div 
+              className="bg-yellow-500 p-6 rounded-lg"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+            >
               <div className="flex items-center gap-2 mb-4">
                 <PenTool className="w-6 h-6" />
                 <h3 className="font-semibold">Services</h3>
@@ -268,12 +317,11 @@ export default function SingleProduct() {
                   <li key={index}>{service}</li>
                 ))}
               </ul>
-            </div>
+            </motion.div>
           </div>
-        </section>
-      </main>
+        </motion.section>
+      </motion.main>
       <Footer />
     </div>
   );
 }
-
