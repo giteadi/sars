@@ -6,6 +6,9 @@ import ProductPage from './pages/ProductPage';
 import BlogPage from './pages/Blogs';
 import SingleProduct from './pages/SingleProduct';
 import Cart from './components/Cart';
+import AboutUs from './pages/AboutUs';
+import ContactUs from './pages/ContactUs';
+import SingleBlogPage from './pages/SingleBlog';
 function App() {
   return (
     <div>
@@ -17,6 +20,9 @@ function App() {
         <Route path='/blogs' element={<BlogPage/>}/>
         <Route path='/singleProduct/:id' element={<SingleProduct/>}/>
         <Route path='/cart' element={<Cart/>}/>
+        <Route path='/aboutus' element={<AboutUs/>}/>
+        <Route path='/contactus' element={<ContactUs/>}/>
+        <Route path='/singleblog/:id' element={<SingleBlogPage/>}/>
       </Routes>
     </div>
   );
