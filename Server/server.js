@@ -12,6 +12,8 @@ const cloudinaryConnect = require("./Config/cloudinary");
 // const reserveRoutes = require('./Routes/reservationRoutes');
 const paymentRoutes = require('./Routes/paymentRoutes');
 const cartRoutes=require("./Routes/cartRoutes");
+const contactus=require("./Routes/contactus");
+
 cloudinaryConnect();
 
 // Middlewares
@@ -31,6 +33,7 @@ app.use('/api/v1',cartRoutes);
 // app.use("/api/v1/check", chekRoutes);
 // app.use("/api/v1/reservation", reserveRoutes);
 app.use("/api/v1/payments",paymentRoutes);
+app.use("/api/v1",contactus);
 
 
 const PORT = process.env.PORT || 3000;

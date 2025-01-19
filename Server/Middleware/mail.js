@@ -9,22 +9,22 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-// Function to send OTP email
-const sendOtpEmail = async (email, otp) => {
+// Function to send email with user details
+const sendUserDetailsEmail = async (name, email, message) => {
     const mailOptions = {
         from: process.env.EMAIL_USER,
-        to: "aditya.satel@gmail.com", // Use the email address provided in the function call
-        subject: 'Your OTP Code',
-        text: `Your OTP code is: ${otp}. It is valid for 15 minutes.`, // Include the actual OTP
+        to: "aditya.satel@gmail.com", 
+        subject: 'New Message from Website',
+        text: `You have received a new message:\n\nName: ${name}\nEmail: ${email}\nMessage: ${message}`, 
     };
 
     try {
         await transporter.sendMail(mailOptions);
-        console.log('OTP sent to:',"aditya.setal@gmail.com" ); // Log the correct recipient email
+        console.log('Message sent successfully to:', "aditya.satel@gmail.com");
     } catch (error) {
-        console.error('Error sending OTP email:', error);
+        console.error('Error sending message email:', error);
         throw error;
     }
 };
 
-module.exports = { sendOtpEmail };
+module.exports = { sendUserDetailsEmail };
