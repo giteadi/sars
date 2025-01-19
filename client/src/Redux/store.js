@@ -6,7 +6,7 @@ import propertyAvailabilityReducer from './CheckAvailibility';
 import paymentReducer from './PaymentSlice';
 import testimonialsReducer from './TestimonialSlice';
 import contactReducer from './ContactSlice'; 
-
+import blogReducer from './BlogSlice';
 // Import persist functionality
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
@@ -39,7 +39,8 @@ export const store = configureStore({
     propertyAvailability: propertyAvailabilityReducer,
     payment: paymentReducer,
     testimonials: testimonialsReducer,
-    contact: contactReducer, // Add ContactSlice reducer here
+    contact: contactReducer,
+    blogs:blogReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

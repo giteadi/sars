@@ -1,79 +1,83 @@
-import { Link } from 'react-router-dom';
-import Navbar from '../components/NavBar'; // Make sure the path is correct
-import FAQ from '../pages/FAQ';
-import Footer from '../pages/Footer';
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { getAllBlogs } from "../Redux/BlogSlice";
+import Navbar from "../components/NavBar";
+import FAQ from "../pages/FAQ";
+import Footer from "../pages/Footer";
 
 const BlogPage = () => {
-    const blogPosts = [
-      {
-        id: 1,
-        title: 'How to Create a Beautiful Door Design',
-        image: 'https://res.cloudinary.com/bazeercloud/image/upload/v1736018602/Ivry_Door_with_open-Photoroom_de4e98.png',
-        date: 'January 4, 2025',
-        excerpt: 'Learn how to design beautiful doors with modern styles and eco-friendly materials...',
-      },
-      {
-        id: 2,
-        title: 'Top 5 Door Trends for 2025',
-        image: 'https://res.cloudinary.com/bazeercloud/image/upload/v1736018609/Grey_Door_frame-Photoroom_x5jzlx.png',
-        date: 'January 3, 2025',
-        excerpt: 'Discover the top trends in door design for 2025, from minimalist designs to smart doors...',
-      },
-      {
-        id: 3,
-        title: 'Sustainable Materials for Home Doors',
-        image: 'https://res.cloudinary.com/bazeercloud/image/upload/v1736018602/Ivry_Door_with_open-Photoroom_de4e98.png',
-        date: 'January 2, 2025',
-        excerpt: 'Explore sustainable materials for making eco-friendly home doors that are stylish and durable...',
-      },
-    ];
-  
-    return (
-      <div className="w-full bg-black text-white">
-        <Navbar />
-        
-        {/* Blog Section */}
-        <section className="container mx-auto px-4 py-16 mt-12">
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-amber-400 mb-8 text-center">
-            Our Blog
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8">
-            {blogPosts.map((post) => (
-              <div
-                key={post.id}
-                className="bg-gradient-to-br from-white/30 via-yellow-200/40 to-yellow-300/50 backdrop-blur-md rounded-lg shadow-xl overflow-hidden transition-transform transform hover:scale-105"
-              >
-                <div className="relative w-full h-64">
-                  <img
-                    src={post.image}
-                    alt={post.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="p-4">
-                  <h3 className="text-xl font-bold text-yellow-300 mb-2">{post.title}</h3>
-                  <p className="text-sm text-gray-300 mb-2">{post.date}</p>
-                  <p className="text-lg text-yellow-400 mb-4">{post.excerpt}</p>
-                  <Link
-                    to={`/singleblog/${post.id}`}
-                    className="bg-yellow-400 hover:bg-yellow-300 text-black font-semibold py-2 px-4 rounded-full w-full transition-colors"
-                  >
-                    Read More
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-  
-        {/* FAQ Section */}
-        <FAQ />
-  
-        {/* Footer */}
-        <Footer />
-      </div>
-    );
+  const dispatch = useDispatch();
+  const { blogs, loading, error } = useSelector((state) => state.blogs);
+
+  useEffect(() => {
+    dispatch(getAllBlogs());
+  }, [dispatch]);
+
+  const formatDate = (dateString) => {
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    return new Date(dateString).toLocaleDateString(undefined, options);
   };
-  
-  export default BlogPage;
-  
+
+  if (loading) {
+    return <div className="text-center text-white mt-20">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center text-red-500 mt-20">Error: {error}</div>;
+  }
+
+  return (
+    <div className="w-full bg-black text-white">
+      <Navbar />
+
+      {/* Blog Section */}
+      <section className="container mx-auto px-4 py-16 mt-12">
+        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-amber-400 mb-8 text-center">
+          Our Blog
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8">
+          {blogs.map((post) => (
+            <div
+              key={post.id}
+              className="bg-gradient-to-br from-white/30 via-yellow-200/40 to-yellow-300/50 backdrop-blur-md rounded-lg shadow-xl overflow-hidden transition-transform transform hover:scale-105"
+            >
+              <div className="relative w-full h-64">
+                <img
+                  src={post.image_url || "/placeholder.svg"}
+                  alt={post.title}
+                  className="w-full h-full object-fit"
+                />
+              </div>
+              <div className="p-4">
+                <h3 className="text-xl font-bold text-yellow-300 mb-2">
+                  {post.title}
+                </h3>
+                <p className="text-sm text-gray-300 mb-2">
+                  {formatDate(post.created_at)}
+                </p>
+                <p className="text-lg text-yellow-400 mb-4">
+                  {post.description}
+                </p>
+                <Link
+                  to={`/singleblog/${post.id}`}
+                  className="bg-yellow-400 hover:bg-yellow-300 text-black font-semibold py-2 px-4 rounded-full w-full transition-colors"
+                >
+                  Read More
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <FAQ />
+
+      {/* Footer */}
+      <Footer />
+    </div>
+  );
+};
+
+export default BlogPage;

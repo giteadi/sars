@@ -1,34 +1,33 @@
-'use client'
-
-import { motion } from 'framer-motion';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { getBlogById } from '../Redux/BlogSlice';
 import Navbar from '../components/NavBar';
 import Footer from '../pages/Footer';
 import { Calendar, Clock, User, Share2 } from 'lucide-react';
 
 const SingleBlogPage = () => {
   const { id } = useParams();
-  const [blog, setBlog] = useState(null);
+  const dispatch = useDispatch();
+  const { blog, loading, error } = useSelector((state) => state.blogs);
 
   useEffect(() => {
-    // Simulated blog data - replace with your actual data fetching
-    const blogData = {
-      title: 'How to Create a Beautiful Door Design',
-      date: 'January 15, 2024',
-      readTime: '5 min read',
-      author: 'John Doe',
-      image: 'https://res.cloudinary.com/bazeercloud/image/upload/v1736018602/Ivry_Door_with_open-Photoroom_de4e98.png',
-      content: `
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+    dispatch(getBlogById(id));
+  }, [dispatch, id]);
 
-        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
 
-        Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
-      `
-    };
-    setBlog(blogData);
-  }, [id]);
+  if (loading) {
+    return <div className="text-center text-white mt-20">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center text-red-500 mt-20">Error: {error}</div>;
+  }
 
   if (!blog) return null;
 
@@ -60,15 +59,15 @@ const SingleBlogPage = () => {
           >
             <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4" />
-              <span>{blog.date}</span>
+              <span>{formatDate(blog.created_at)}</span>
             </div>
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4" />
-              <span>{blog.readTime}</span>
+              <span>5 min read</span>
             </div>
             <div className="flex items-center gap-2">
               <User className="w-4 h-4" />
-              <span>{blog.author}</span>
+              <span>Admin</span>
             </div>
           </motion.div>
 
@@ -79,7 +78,7 @@ const SingleBlogPage = () => {
             className="mb-8 rounded-2xl overflow-hidden"
           >
             <img
-              src={blog.image || "/placeholder.svg"}
+              src={blog.image_url || "/placeholder.svg"}
               alt={blog.title}
               className="w-full h-[400px] object-cover"
             />
@@ -91,11 +90,7 @@ const SingleBlogPage = () => {
             transition={{ delay: 0.8 }}
             className="prose prose-lg prose-invert max-w-none"
           >
-            {blog.content.split('\n\n').map((paragraph, index) => (
-              <p key={index} className="mb-6 leading-relaxed">
-                {paragraph}
-              </p>
-            ))}
+            <p className="mb-6 leading-relaxed">{blog.description}</p>
           </motion.div>
 
           <motion.div
@@ -124,3 +119,4 @@ const SingleBlogPage = () => {
 };
 
 export default SingleBlogPage;
+
