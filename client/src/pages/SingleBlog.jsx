@@ -80,7 +80,7 @@ const SingleBlogPage = () => {
             <img
               src={blog.image_url || "/placeholder.svg"}
               alt={blog.title}
-              className="w-full h-[400px] object-cover"
+              className="w-[500px] h-[500px] object-fit"
             />
           </motion.div>
 
