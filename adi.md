@@ -41,3 +41,10 @@ CREATE TABLE cart (
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE -- When the product is deleted, delete the cart items associated with the product
 );
 
+CREATE TABLE blogs (
+    id INT AUTO_INCREMENT PRIMARY KEY,         -- Unique identifier for each blog
+    title VARCHAR(255) NOT NULL,               -- Title of the blog
+    image_url VARCHAR(255) NOT NULL,           -- URL of the blog's image
+    description TEXT NOT NULL,                 -- Description/content of the blog
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Date and time when the blog was created
+);
