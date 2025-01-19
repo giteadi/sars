@@ -5,6 +5,7 @@ import propertyReducer from './propertySlice';
 import propertyAvailabilityReducer from './CheckAvailibility';
 import paymentReducer from './PaymentSlice';
 import testimonialsReducer from './TestimonialSlice';
+import contactReducer from './ContactSlice'; 
 
 // Import persist functionality
 import { persistStore, persistReducer } from 'redux-persist';
@@ -15,14 +16,14 @@ import { FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist
 const authPersistConfig = {
   key: 'auth',
   storage,
-  whitelist: ['user', 'token'] // Only persist these fields from auth state
+  whitelist: ['user', 'token'], // Only persist these fields from auth state
 };
 
 // Persistence configuration for cart slice
 const cartPersistConfig = {
   key: 'cart',
   storage,
-  whitelist: ['cartItems', 'totalAmount'] // Only persist these fields from cart state
+  whitelist: ['cartItems', 'totalAmount'], // Only persist these fields from cart state
 };
 
 // Create persisted reducers
@@ -38,6 +39,7 @@ export const store = configureStore({
     propertyAvailability: propertyAvailabilityReducer,
     payment: paymentReducer,
     testimonials: testimonialsReducer,
+    contact: contactReducer, // Add ContactSlice reducer here
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -73,4 +75,3 @@ export const resetStore = () => {
 };
 
 export default store;
-

@@ -1,10 +1,12 @@
 'use client'
 
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '../components/NavBar';
 import Footer from '../pages/Footer';
 import { Phone, Mail, MapPin, Send } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { submitContactForm, resetContactState } from '../Redux/ContactSlice';
 
 const ContactUs = () => {
   const [formData, setFormData] = useState({
@@ -13,10 +15,19 @@ const ContactUs = () => {
     message: ''
   });
 
+  const dispatch = useDispatch();
+  const { loading, success, error } = useSelector((state) => state.contact);
+
+  useEffect(() => {
+    // Reset contact form state when component unmounts
+    return () => {
+      dispatch(resetContactState());
+    };
+  }, [dispatch]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission
-    console.log(formData);
+    dispatch(submitContactForm(formData));
   };
 
   const handleChange = (e) => {
@@ -154,11 +165,30 @@ const ContactUs = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   type="submit"
-                  className="w-full py-3 bg-amber-400 text-black font-semibold rounded-lg flex items-center justify-center gap-2"
+                  disabled={loading}
+                  className="w-full py-3 bg-amber-400 text-black font-semibold rounded-lg flex items-center justify-center gap-2 disabled:opacity-50"
                 >
-                  Send Message
+                  {loading ? 'Sending...' : 'Send Message'}
                   <Send className="w-5 h-5" />
                 </motion.button>
+                {success && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="mt-4 p-4 bg-green-500 text-white rounded-lg"
+                  >
+                    Message sent successfully!
+                  </motion.div>
+                )}
+                {error && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="mt-4 p-4 bg-red-500 text-white rounded-lg"
+                  >
+                    {error}
+                  </motion.div>
+                )}
               </form>
             </motion.div>
           </div>
@@ -171,3 +201,4 @@ const ContactUs = () => {
 };
 
 export default ContactUs;
+
