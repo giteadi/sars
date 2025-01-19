@@ -16,7 +16,7 @@ import { FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist
 const authPersistConfig = {
   key: 'auth',
   storage,
-  whitelist: ['user', 'token'], // Only persist these fields from auth state
+  whitelist: ['user', 'token', 'isAuthenticated'], // Add isAuthenticated to persist
 };
 
 // Persistence configuration for cart slice
@@ -75,3 +75,4 @@ export const resetStore = () => {
 };
 
 export default store;
+

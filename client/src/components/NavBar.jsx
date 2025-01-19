@@ -112,7 +112,7 @@ const Navbar = () => {
             <p>{user ? user.name : 'Guest'}</p>
             {isUserDropdownOpen && (
               <div className="absolute top-full right-0 mt-2 bg-white/10 backdrop-blur-md border border-white/30 rounded-md shadow-lg w-40 py-2 z-20 transition-all duration-300 ease-in-out">
-                {isAuthenticated ? (
+                {isAuthenticated && user ? (
                   <>
                     <Link
                       to="/profile"

@@ -52,6 +52,7 @@ export const verifyOTP = createAsyncThunk(
 export const logoutUser = createAsyncThunk(
   'auth/logoutUser',
   async (_, { dispatch }) => {
+    localStorage.clear(); // Clear any persisted data
     dispatch(clearUserData());
   }
 );
@@ -63,7 +64,7 @@ const authSlice = createSlice({
     loading: false,
     error: null,
     user: null,
-    userId: null,  // Ensure userId is present in the initial state
+    userId: null,
     isAuthenticated: false,
     isOTPModalOpen: false,
     otpEmail: '',
@@ -112,8 +113,8 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload?.user || {};
-        state.userId = action.payload?.user?.userId || null;  // Store userId in state
-        state.isAuthenticated = true;
+        state.userId = action.payload?.user?.userId || null;
+        state.isAuthenticated = Boolean(action.payload?.user); // Ensure this is set based on user presence
         toast.success('Login successful!');
       })
       .addCase(loginUser.rejected, (state, action) => {
@@ -147,3 +148,4 @@ const authSlice = createSlice({
 // **Export Actions and Reducer**
 export const { clearUserData, openOTPModal, closeOTPModal } = authSlice.actions;
 export default authSlice.reducer;
+
