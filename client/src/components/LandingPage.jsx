@@ -114,15 +114,17 @@ function clickhandle(){
       </section>
 
       {/* Reviews */}
-      <AnimatedSection animation={fadeInRight}>
+      {/* <AnimatedSection animation={fadeInRight}>
         <Reviews />
-      </AnimatedSection>
-
+      </AnimatedSection> */}
+    <p className="flex items-center justify-center text-3xl font-bold text-gray-400 mt-4">ECO FRIENDLY</p>
       {/* Eco Friendly */}
       <section className="container mx-auto px-4 py-16">
         <AnimatedSection animation={fadeInUp}>
           <div className="bg-yellow-400/10 backdrop-blur-md border border-white/30 p-12 rounded-3xl shadow-lg">
+          {/* <p className="flex items-center justify-center text-xl text-gray-400 mt-4">ECO FRIENDLY</p> */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+            
               <img
                 src="https://res.cloudinary.com/bazeercloud/image/upload/v1736019937/rb_222_hokupo.png"
                 alt="Eco Friendly"
@@ -134,7 +136,7 @@ function clickhandle(){
                 className="w-32 h-32 object-contain mx-auto"
               />
             </div>
-            <p className="text-center md:text-left text-xl text-gray-400 mt-4">ECO FRIENDLY</p>
+            
           </div>
         </AnimatedSection>
       </section>
