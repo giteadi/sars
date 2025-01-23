@@ -13,14 +13,14 @@ const transporter = nodemailer.createTransport({
 const sendUserDetailsEmail = async (name, email, message) => {
     const mailOptions = {
         from: process.env.EMAIL_USER,
-        to: "aditya.satel@gmail.com", 
+        to: process.env.EMAIL_USER, 
         subject: 'New Message from Website',
         text: `You have received a new message:\n\nName: ${name}\nEmail: ${email}\nMessage: ${message}`, 
     };
 
     try {
         await transporter.sendMail(mailOptions);
-        console.log('Message sent successfully to:', "aditya.satel@gmail.com");
+        // console.log('Message sent successfully to:', "aditya.satel@gmail.com");
     } catch (error) {
         console.error('Error sending message email:', error);
         throw error;
