@@ -1,13 +1,22 @@
 import { useEffect } from "react"
 import { motion, useAnimation } from "framer-motion"
 import { useInView } from "react-intersection-observer"
-import { ChevronLeft, ChevronRight, ChevronDown, Facebook, Twitter, Instagram } from "lucide-react"
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronDown,
+  Facebook,
+  Twitter,
+  Instagram,
+  PhoneIcon as WhatsApp,
+} from "lucide-react"
 import FAQ from "../pages/FAQ"
 import Carosal from "./Carosal"
 import Reviews from "../pages/Reviews"
 import Footer from "../pages/Footer"
 import Navbar from "./NavBar"
 import { useNavigate } from "react-router-dom"
+import { FaWhatsapp } from "react-icons/fa"
 // Animation variants
 const fadeInLeft = {
   hidden: { opacity: 0, x: -100 },
@@ -46,10 +55,10 @@ const AnimatedSection = ({ children, animation }) => {
 }
 
 export default function LandingPage() {
-const nav=useNavigate();
-function clickhandle(){
-  nav('/product');
-}
+  const nav = useNavigate()
+  function clickhandle() {
+    nav("/product")
+  }
   return (
     <div className="w-full bg-black text-white">
       <Navbar />
@@ -69,15 +78,19 @@ function clickhandle(){
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center relative z-10">
           <AnimatedSection animation={fadeInLeft}>
             <div className="space-y-6">
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-amber-400 leading-tight">Introducing SARS Premium Wpc Doors & Frame</h1>
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-amber-400 leading-tight">
+                Introducing SARS Premium Wpc Doors & Frame
+              </h1>
               <p className="text-xl md:text-2xl lg:text-3xl text-amber-400">
-              the ultimate fusion of sustainbaility, durability and style of wpc door
+                the ultimate fusion of sustainbaility, durability and style of wpc door
                 <br />
                 Creative and Unique
               </p>
               <p className="text-sm md:text-base lg:text-lg text-amber-400">DESIGN YOUR DREAM DOOR</p>
-              <button className="bg-amber-400 text-black px-6 py-2 rounded-full hover:bg-amber-300 transition duration-300"
-              onClick={clickhandle}>
+              <button
+                className="bg-amber-400 text-black px-6 py-2 rounded-full hover:bg-amber-300 transition duration-300"
+                onClick={clickhandle}
+              >
                 Explore Now
               </button>
             </div>
@@ -103,7 +116,20 @@ function clickhandle(){
         <AnimatedSection animation={fadeInLeft}>
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-amber-400 mb-8">Product Features</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-8 rounded-xl bg-gradient-to-r from-amber-400/10 to-amber-400/5 backdrop-blur-sm border border-amber-400/20">
-            {["10 years assured warranty", "Water proof", "Durable and long-lasting","Termite Resistance","Low Maintenance"," Natural Wood Look","Variety of Colors","Customization Options"," Low Carbon Footprint","High Strength","Impact Resistance","Thermal Insulation"].map((feature, index) => (
+            {[
+              "10 years assured warranty",
+              "Water proof",
+              "Durable and long-lasting",
+              "Termite Resistance",
+              "Low Maintenance",
+              " Natural Wood Look",
+              "Variety of Colors",
+              "Customization Options",
+              " Low Carbon Footprint",
+              "High Strength",
+              "Impact Resistance",
+              "Thermal Insulation",
+            ].map((feature, index) => (
               <div key={index} className="flex items-center space-x-4 p-4">
                 <span className="text-amber-400 text-xl">✓</span>
                 <p className="text-amber-400 text-lg">{feature}</p>
@@ -117,14 +143,13 @@ function clickhandle(){
       {/* <AnimatedSection animation={fadeInRight}>
         <Reviews />
       </AnimatedSection> */}
-    <p className="flex items-center justify-center text-3xl font-bold text-gray-400 mt-4">ECO FRIENDLY</p>
+      <p className="flex items-center justify-center text-3xl font-bold text-gray-400 mt-4">ECO FRIENDLY</p>
       {/* Eco Friendly */}
       <section className="container mx-auto px-4 py-16">
         <AnimatedSection animation={fadeInUp}>
           <div className="bg-yellow-400/10 backdrop-blur-md border border-white/30 p-12 rounded-3xl shadow-lg">
-          {/* <p className="flex items-center justify-center text-xl text-gray-400 mt-4">ECO FRIENDLY</p> */}
+            {/* <p className="flex items-center justify-center text-xl text-gray-400 mt-4">ECO FRIENDLY</p> */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
-            
               <img
                 src="https://res.cloudinary.com/bazeercloud/image/upload/v1736019937/rb_222_hokupo.png"
                 alt="Eco Friendly"
@@ -136,7 +161,6 @@ function clickhandle(){
                 className="w-32 h-32 object-contain mx-auto"
               />
             </div>
-            
           </div>
         </AnimatedSection>
       </section>
@@ -148,6 +172,15 @@ function clickhandle(){
 
       {/* Footer */}
       <Footer />
+      <a
+        href="https://wa.me/918770229706"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 z-50 bg-green-500 text-white p-3 rounded-full shadow-lg hover:bg-green-600 transition-colors duration-300"
+        aria-label="Chat on WhatsApp"
+      >
+        <FaWhatsapp size={24} />
+      </a>
     </div>
   )
 }
