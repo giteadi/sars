@@ -146,12 +146,12 @@ const AboutUs = () => {
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 1.2 }}
-            className="relative h-[400px] rounded-lg overflow-hidden"
+            className="relative rounded-lg overflow-hidden "
           >
             <img
               src="https://res.cloudinary.com/bazeercloud/image/upload/v1736018602/Ivry_Door_with_open-Photoroom_de4e98.png"
               alt="Our Workshop"
-              className="w-full h-full object-cover"
+              className="w-full  object-fit"
             />
           </motion.div>
         </motion.section>
