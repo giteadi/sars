@@ -6,7 +6,7 @@ export default function FAQ() {
     {
       id: 1,
       question: "What is WPC?",
-      answer: "WPC stands for Wood Plastic Composite, a hybrid material made from natural wood fibers and plastic.",
+      answer: "WPC stands for Wood polymer Composite, a hybrid material made from recycle wood fibers and polymer.",
     },
     {
       id: 2,
