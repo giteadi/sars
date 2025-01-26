@@ -89,7 +89,7 @@ const ContactUs = () => {
                 </div>
                 <div>
                   <h3 className="font-semibold">Email</h3>
-                  <p className="text-gray-400">aryaajeet1007@gmail.com</p>
+                  <p className="text-gray-400">wpcind@sarsdecors.com</p>
                 </div>
               </motion.div>
 
