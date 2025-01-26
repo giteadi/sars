@@ -9,7 +9,16 @@ import {
   Twitter,
   Instagram,
   PhoneIcon as WhatsApp,
+  Leaf,
+  Recycle,
+  TreePine,
+  Wind,
+  DoorOpenIcon as Door,
+  TreesIcon as Plant,
+  Sprout,
+  Sun,
 } from "lucide-react"
+import eco2 from "../assets/eco2.jpg"
 import FAQ from "../pages/FAQ"
 import Carosal from "./Carosal"
 import Reviews from "../pages/Reviews"
@@ -17,6 +26,7 @@ import Footer from "../pages/Footer"
 import Navbar from "./NavBar"
 import { useNavigate } from "react-router-dom"
 import { FaWhatsapp } from "react-icons/fa"
+
 // Animation variants
 const fadeInLeft = {
   hidden: { opacity: 0, x: -100 },
@@ -54,6 +64,71 @@ const AnimatedSection = ({ children, animation }) => {
   )
 }
 
+// New component for circular eco icons
+const CircularEcoIcons = () => {
+  const iconCount = 8
+  const radius = 120 // Radius of the circle
+  const centerX = 150 // Center X coordinate
+  const centerY = 150 // Center Y coordinate
+
+  const ecoIcons = [
+    { Icon: Leaf, color: "text-green-400" },
+    { Icon: Recycle, color: "text-green-500" },
+    { Icon: TreePine, color: "text-green-600" },
+    { Icon: Wind, color: "text-green-400" },
+    { Icon: Plant, color: "text-green-500" },
+    { Icon: Sprout, color: "text-green-600" },
+    { Icon: Sun, color: "text-yellow-400" },
+    { Icon: Leaf, color: "text-green-400" },
+  ]
+
+  return (
+    <div className="relative w-[300px] h-[300px] mx-auto">
+      {ecoIcons.map((IconObj, index) => {
+        const angle = (index / iconCount) * 2 * Math.PI
+        const x = centerX + radius * Math.cos(angle)
+        const y = centerY + radius * Math.sin(angle)
+
+        return (
+          <motion.div
+            key={index}
+            className={`absolute ${IconObj.color}`}
+            initial={{ scale: 0, x: centerX - 12, y: centerY - 12 }}
+            animate={{
+              scale: 1,
+              x: x - 12,
+              y: y - 12,
+              rotate: 360,
+            }}
+            transition={{
+              duration: 2,
+              delay: index * 0.2,
+              repeat: Number.POSITIVE_INFINITY,
+              repeatType: "reverse",
+              repeatDelay: 1,
+            }}
+          >
+            <IconObj.Icon size={24} />
+          </motion.div>
+        )
+      })}
+      {/* Center door icon */}
+      <motion.div
+        className="absolute text-amber-400"
+        style={{
+          left: `${centerX - 24}px`,
+          top: `${centerY - 24}px`,
+        }}
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ delay: 1.6, duration: 0.5 }}
+      >
+        <Door size={48} />
+      </motion.div>
+    </div>
+  )
+}
+
 export default function LandingPage() {
   const nav = useNavigate()
   function clickhandle() {
@@ -61,6 +136,7 @@ export default function LandingPage() {
   }
   return (
     <div className="w-full bg-black text-white">
+      {/* Previous sections remain unchanged */}
       <Navbar />
       <header className="container mx-auto px-4 py-4 flex justify-between items-center border-2 border-amber-400/20">
         <div className="w-12 h-12">
@@ -82,7 +158,9 @@ export default function LandingPage() {
                 Introducing SARS Premium Wpc Doors & Frame
               </h1>
               <p className="text-sm md:text-lg lg:text-lg text-white">
-            the ultimate fusion of sustainbaility, durability and style of wpc door . experience the future of door advance manufacturing technology with our eco- friendly , low- maintenance and energy efficiency solution . design to enhance your home curb appeal and protect the enviromental
+                the ultimate fusion of sustainbaility, durability and style of wpc door . experience the future of door
+                advance manufacturing technology with our eco- friendly , low- maintenance and energy efficiency
+                solution . design to enhance your home curb appeal and protect the enviromental
                 <br />
                 Creative and Unique
               </p>
@@ -148,18 +226,9 @@ export default function LandingPage() {
       <section className="container mx-auto px-4 py-16">
         <AnimatedSection animation={fadeInUp}>
           <div className="bg-yellow-400/10 backdrop-blur-md border border-white/30 p-12 rounded-3xl shadow-lg">
-            {/* <p className="flex items-center justify-center text-xl text-gray-400 mt-4">ECO FRIENDLY</p> */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
-              <img
-                src="https://res.cloudinary.com/bazeercloud/image/upload/v1736019937/rb_222_hokupo.png"
-                alt="Eco Friendly"
-                className="w-32 h-32 object-contain mx-auto"
-              />
-              <img
-                src="https://res.cloudinary.com/bazeercloud/image/upload/v1736020045/rb_114044_u30hxx.png"
-                alt="Certification"
-                className="w-32 h-32 object-contain mx-auto"
-              />
+              <CircularEcoIcons />
+              <img src={eco2 || "/placeholder.svg"} alt="Certification" className="object-contain mx-auto border rounded-full" />
             </div>
           </div>
         </AnimatedSection>
