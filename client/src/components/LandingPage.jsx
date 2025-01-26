@@ -166,9 +166,9 @@ export default function LandingPage() {
                 Introducing SARS Premium Wpc Doors & Frame
               </h1>
               <p className="text-sm md:text-lg lg:text-lg text-white">
-                the ultimate fusion of sustainbaility, durability and style of wpc door . experience the future of door
+              The ultimate fusion of sustainbaility, durability and style of wpc door . Experience the future of door
                 advance manufacturing technology with our eco- friendly , low- maintenance and energy efficiency
-                solution . design to enhance your home curb appeal and protect the enviromental
+                solution . Design to enhance your home curb appeal and protect the Enviromental
                 <br />
                 Creative and Unique
               </p>
