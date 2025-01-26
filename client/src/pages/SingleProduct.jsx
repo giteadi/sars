@@ -243,7 +243,7 @@ export default function SingleProduct() {
                 ₹{Number(product.product.price)?.toLocaleString('en-IN')}
               </span>
             </div>
-            <div className="flex gap-4">
+            {/* <div className="flex gap-4">
               <motion.button 
                 onClick={handleBuyNow}
                 className="px-6 py-2 bg-yellow-500 text-black font-semibold rounded-md hover:bg-yellow-400 transition-colors"
@@ -261,7 +261,7 @@ export default function SingleProduct() {
               >
                 {addingToCart ? 'Adding...' : 'Add to Cart'}
               </motion.button>
-            </div>
+            </div> */}
           </motion.div>
         </div>
 

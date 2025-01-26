@@ -83,7 +83,7 @@ const Navbar = () => {
         {/* Icons */}
         <div className="flex items-center space-x-2 md:space-x-6">
           {/* Cart - Only shown when authenticated */}
-          {isAuthenticated && (
+          {/* {isAuthenticated && (
             <button onClick={handleCartClick} className="p-2 hover:text-amber-400 transition-colors relative">
               <FaShoppingCart className="w-6 h-6" />
               {cartItems.length > 0 && (
@@ -92,7 +92,7 @@ const Navbar = () => {
                 </span>
               )}
             </button>
-          )}
+          )} */}
 
           {/* User Dropdown */}
           <div className="relative flex items-center space-x-2">
