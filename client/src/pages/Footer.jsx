@@ -15,20 +15,15 @@ export default function Footer() {
           </div>
           <div className="flex flex-col items-center md:items-end">
             <div className="flex space-x-6 mb-4">
-              <a href="#" className="text-amber-400 hover:text-amber-300">
+              <a href="https://www.facebook.com/share/157qpcZmrQ/?mibextid=wwXIfr" className="text-amber-400 hover:text-amber-300">
                 <Facebook className="w-6 h-6" />
               </a>
-              <a href="#" className="text-amber-400 hover:text-amber-300">
+              <a href="https://x.com/indwpcdesire?s=21" className="text-amber-400 hover:text-amber-300">
                 <Twitter className="w-6 h-6" />
               </a>
-              <a href="#" className="text-amber-400 hover:text-amber-300">
+              <a href="https://www.instagram.com/premium.wpc.doorframewallpanel?igsh=MTF1OGtqeDN5ZHowcQ%3D%3D&utm_source=qr" className="text-amber-400 hover:text-amber-300">
                 <Instagram className="w-6 h-6" />
               </a>
-            </div>
-            <div className="flex space-x-6 text-sm text-amber-400">
-              <a href="#" className="hover:text-amber-300">Social</a>
-              <a href="#" className="hover:text-amber-300">Contact</a>
-              <a href="#" className="hover:text-amber-300">About</a>
             </div>
           </div>
         </div>
