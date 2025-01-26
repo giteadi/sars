@@ -48,3 +48,88 @@ CREATE TABLE blogs (
     description TEXT NOT NULL,                 -- Description/content of the blog
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Date and time when the blog was created
 );
+
+
+<section className="container mx-auto px-4 py-16">
+        <AnimatedSection animation={fadeInLeft}>
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-amber-400 mb-8">Why Choose SARS WPC Doors?</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-8 rounded-xl bg-gradient-to-r from-amber-400/10 to-amber-400/5 backdrop-blur-sm border border-amber-400/20">
+            {[
+              {
+                icon: Medal,
+                title: "Premium Quality",
+                description: "Superior grade materials ensuring lasting durability",
+              },
+              {
+                icon: Shield,
+                title: "10 Year Warranty",
+                description: "Comprehensive warranty coverage for peace of mind",
+              },
+              {
+                icon: TreePine,
+                title: "Eco-Friendly",
+                description: "Sustainable materials with minimal environmental impact",
+              },
+              {
+                icon: Wallet,
+                title: "Cost-Effective",
+                description: "Excellent value for money with long-term savings",
+              },
+              {
+                icon: Clock,
+                title: "Low Maintenance",
+                description: "Minimal upkeep required, saving time and effort",
+              },
+              {
+                icon: PaintBucket,
+                title: "Wide Color Range",
+                description: "Extensive selection of colors to match your style",
+              },
+              {
+                icon: Sparkles,
+                title: "UV Resistant",
+                description: "Protected against sun damage and discoloration",
+              },
+              {
+                icon: Ruler,
+                title: "Custom Sizes",
+                description: "Tailored dimensions to fit your specific needs",
+              },
+              {
+                icon: ThumbsUp,
+                title: "Easy Installation",
+                description: "Simplified fitting process with professional support",
+              },
+              {
+                icon: Leaf,
+                title: "Weather Resistant",
+                description: "Excellent performance in all weather conditions",
+              },
+              {
+                icon: HeartHandshake,
+                title: "Expert Support",
+                description: "Dedicated customer service and technical assistance",
+              },
+              {
+                icon: BadgeCheck,
+                title: "Certified Quality",
+                description: "Meeting international quality standards",
+              },
+            ].map((usp, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="flex flex-col items-center text-center p-6 rounded-lg hover:bg-amber-400/10 transition-colors duration-300"
+              >
+                <div className="mb-4 p-3 rounded-full bg-amber-400/20">
+                  <usp.icon className="w-8 h-8 text-amber-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-amber-400 mb-2">{usp.title}</h3>
+                <p className="text-sm text-gray-300">{usp.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </AnimatedSection>
+      </section>
