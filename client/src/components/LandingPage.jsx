@@ -78,11 +78,11 @@ export default function LandingPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center relative z-10">
           <AnimatedSection animation={fadeInLeft}>
             <div className="space-y-6">
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-amber-400 leading-tight">
+              <h1 className="text-5xl md:text-5xl lg:text-5xl font-bold text-amber-400 leading-tight">
                 Introducing SARS Premium Wpc Doors & Frame
               </h1>
-              <p className="text-xl md:text-2xl lg:text-3xl text-amber-400">
-                the ultimate fusion of sustainbaility, durability and style of wpc door
+              <p className="text-sm md:text-lg lg:text-lg text-white">
+            the ultimate fusion of sustainbaility, durability and style of wpc door . experience the future of door advance manufacturing technology with our eco- friendly , low- maintenance and energy efficiency solution . design to enhance your home curb appeal and protect the enviromental
                 <br />
                 Creative and Unique
               </p>
@@ -100,7 +100,7 @@ export default function LandingPage() {
             <img
               src="https://res.cloudinary.com/bazeercloud/image/upload/v1737476007/SARS_1_Doors___1_-6__2_-removebg-preview_pbgmuw.png"
               alt="Featured Door"
-              className="w-full max-w-6xl mx-auto h-auto object-contain"
+              className="w-full scale-150 max-w-8xl mx-auto h-auto object-contain"
             />
           </AnimatedSection>
         </div>
