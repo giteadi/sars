@@ -1,4 +1,7 @@
 import { ChevronLeft, ChevronRight, ChevronDown, Facebook, Twitter, Instagram } from "lucide-react";
+import PrivacyPolicy from "./PrivacyPolicy";
+import TermsAndConditions from "./TermsAndConditions";
+import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
@@ -24,6 +27,10 @@ export default function Footer() {
               <a href="https://www.instagram.com/premium.wpc.doorframewallpanel?igsh=MTF1OGtqeDN5ZHowcQ%3D%3D&utm_source=qr" className="text-amber-400 hover:text-amber-300">
                 <Instagram className="w-6 h-6" />
               </a>
+            </div>
+            <div className="flex space-x-6 text-sm text-amber-400">
+              <Link to="/privacy-policy">Privacy Policy</Link>
+              <Link to="/terms-and-conditions">Terms and Conditions</Link>
             </div>
           </div>
         </div>

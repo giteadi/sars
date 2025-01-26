@@ -9,6 +9,8 @@ import Cart from './components/Cart';
 import AboutUs from './pages/AboutUs';
 import ContactUs from './pages/ContactUs';
 import SingleBlogPage from './pages/SingleBlog';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsAndConditions from './pages/TermsAndConditions';
 function App() {
   return (
     <div>
@@ -23,6 +25,9 @@ function App() {
         <Route path='/about' element={<AboutUs/>}/>
         <Route path='/contact' element={<ContactUs/>}/>
         <Route path='/singleblog/:id' element={<SingleBlogPage/>}/>
+        <Route path='privacy-policy' element={<PrivacyPolicy/>}/>
+        <Route path='terms-and-conditions' element={<TermsAndConditions/>}/>
+
       </Routes>
     </div>
   );
