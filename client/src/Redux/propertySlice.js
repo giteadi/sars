@@ -7,7 +7,7 @@ export const fetchProducts = createAsyncThunk(
   'product/getAllProducts',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get('http://localhost:4000/api/v1/admin/getProducts');
+      const response = await axios.get('http://13.60.99.223:8000/api/v1/admin/getProducts');
       // console.log('Fetched Products:', response.data); 
       return response.data;
     } catch (error) {
@@ -22,7 +22,7 @@ export const fetchProductById = createAsyncThunk(
   'product/getProductById',
   async (productId, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`http://localhost:4000/api/v1/admin/getProductById/${productId}`);
+      const response = await axios.get(`http://13.60.99.223:8000/api/v1/admin/getProductById/${productId}`);
       // console.log('Fetched Product by ID:', response.data); 
       return response.data;
     } catch (error) {
@@ -56,7 +56,7 @@ export const createProduct = createAsyncThunk(
       }
 
       const response = await axios.post(
-        'http://localhost:4000/api/v1/admin/addProduct',
+        'http://13.60.99.223:8000/api/v1/admin/addProduct',
         formData,
         { headers: { 'Content-Type': 'multipart/form-data' } }
       );
@@ -92,7 +92,7 @@ export const updateProduct = createAsyncThunk(
       }
 
       const response = await axios.put(
-        `http://localhost:4000/api/v1/admin/updateProductById/${id}`,
+        `http://13.60.99.223:8000/api/v1/admin/updateProductById/${id}`,
         formData,
         { headers: { 'Content-Type': 'multipart/form-data' } }
       );
@@ -111,7 +111,7 @@ export const deleteProduct = createAsyncThunk(
   async (productId, { rejectWithValue }) => {
     try {
       const response = await axios.delete(
-        `http://localhost:4000/api/v1/admin/deleteProductById/${productId}`
+        `http://13.60.99.223:8000/api/v1/admin/deleteProductById/${productId}`
       );
       console.log('Product Deleted:', response.data); // Log deletion success
       return { id: productId, ...response.data };

@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const PAYMENT_API_URL = 'http://localhost:4000/api/v1/payments';
+const PAYMENT_API_URL = 'http://13.60.99.223:8000/api/v1/payments';
 
 // Create Razorpay order
 export const createRazorpayOrder = createAsyncThunk(

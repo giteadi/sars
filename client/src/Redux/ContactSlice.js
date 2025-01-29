@@ -6,7 +6,7 @@ export const submitContactForm = createAsyncThunk(
     "contact/submitContactForm",
     async (formData, { rejectWithValue }) => {
         try {
-            const response = await axios.post("http://localhost:4000/api/v1/contact", formData);
+            const response = await axios.post("http://13.60.99.223:8000/api/v1/contact", formData);
             return response.data; // Assuming backend sends a success message
         } catch (error) {
             const errorMessage =

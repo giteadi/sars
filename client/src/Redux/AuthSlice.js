@@ -7,7 +7,7 @@ export const registerUser = createAsyncThunk(
   'auth/registerUser',
   async (userData, { rejectWithValue, dispatch }) => {
     try {
-      const response = await axios.post('http://localhost:4000/api/v1/user/register', userData);
+      const response = await axios.post('http://13.60.99.223:8000/api/v1/user/register', userData);
       
       // Trigger OTP verification if user is an admin
       if (userData.role === 'admin') {
@@ -26,7 +26,7 @@ export const loginUser = createAsyncThunk(
   'auth/loginUser',
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await axios.post('http://localhost:4000/api/v1/user/login', userData);
+      const response = await axios.post('http://13.60.99.223:8000/api/v1/user/login', userData);
       // Include userId in the returned data
       return response.data;
     } catch (error) {
@@ -40,7 +40,7 @@ export const verifyOTP = createAsyncThunk(
   'auth/verifyOTP',
   async ({ email, otp }, { rejectWithValue }) => {
     try {
-      const response = await axios.post('http://localhost:4000/api/v1/user/verify-otp', { email, otp });
+      const response = await axios.post('http://13.60.99.223:8000/api/v1/user/verify-otp', { email, otp });
       return response.data;  // Expecting verification success response
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: 'OTP verification failed!' });

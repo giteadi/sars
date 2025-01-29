@@ -12,7 +12,7 @@ const initialState = {
 // Async actions (thunks) for making API calls
 export const addBlog = createAsyncThunk('blogs/addBlog', async (blogData) => {
     try {
-        const response = await axios.post('http://localhost:4000/api/v1/blogs', blogData, {
+        const response = await axios.post('http://13.60.99.223:8000/api/v1/blogs', blogData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
@@ -25,7 +25,7 @@ export const addBlog = createAsyncThunk('blogs/addBlog', async (blogData) => {
 
 export const getAllBlogs = createAsyncThunk('blogs/getAllBlogs', async () => {
     try {
-        const response = await axios.get('http://localhost:4000/api/v1/blogs');
+        const response = await axios.get('http://13.60.99.223:8000/api/v1/blogs');
         return response.data.blogs;  // Assuming the response contains a "blogs" array
     } catch (error) {
         throw Error(error.response ? error.response.data.message : error.message);
@@ -34,7 +34,7 @@ export const getAllBlogs = createAsyncThunk('blogs/getAllBlogs', async () => {
 
 export const getBlogById = createAsyncThunk('blogs/getBlogById', async (id) => {
     try {
-        const response = await axios.get(`http://localhost:4000/api/v1/blogs/${id}`);
+        const response = await axios.get(`http://13.60.99.223:8000/api/v1/blogs/${id}`);
         return response.data.blog;  // Assuming the response contains a single "blog" object
     } catch (error) {
         throw Error(error.response ? error.response.data.message : error.message);
@@ -43,7 +43,7 @@ export const getBlogById = createAsyncThunk('blogs/getBlogById', async (id) => {
 
 export const updateBlog = createAsyncThunk('blogs/updateBlog', async (blogData) => {
     try {
-        const response = await axios.put(`http://localhost:4000/api/v1/blogs/${blogData.id}`, blogData, {
+        const response = await axios.put(`http://13.60.99.223:8000/api/v1/blogs/${blogData.id}`, blogData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
@@ -56,7 +56,7 @@ export const updateBlog = createAsyncThunk('blogs/updateBlog', async (blogData) 
 
 export const deleteBlog = createAsyncThunk('blogs/deleteBlog', async (id) => {
     try {
-        await axios.delete(`http://localhost:4000/api/v1/blogs/${id}`);
+        await axios.delete(`http://13.60.99.223:8000/api/v1/blogs/${id}`);
         return id;  // Returning the blog ID to remove it from the state
     } catch (error) {
         throw Error(error.response ? error.response.data.message : error.message);
