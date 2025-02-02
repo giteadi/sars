@@ -10,12 +10,11 @@ export default function RegisterPage() {
     email: '',
     password: '',
     confirmPassword: '',
-    role:"user"
+    role: "user"
   });
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Handle form data changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -24,33 +23,20 @@ export default function RegisterPage() {
     }));
   };
 
-  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Validate password confirmation
     if (formData.password !== formData.confirmPassword) {
       alert('Passwords do not match!');
       return;
     }
 
-    // Dispatch register action
-    const userData = {
-      fullName: formData.fullName,
-      email: formData.email,
-      password: formData.password,
-      confirmPassword: formData.confirmPassword,
-      role: 'user', 
-    };
-console.log(userData);
-    dispatch(registerUser(userData))
+    dispatch(registerUser(formData))
       .unwrap()
       .then(() => {
-        // Redirect or perform actions on successful registration
         navigate('/login');
       })
       .catch((err) => {
-        // Handle any errors here
         console.error(err);
       });
   };
@@ -61,16 +47,15 @@ console.log(userData);
       <nav className="absolute top-0 left-0 right-0 z-10">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           {/* Logo */}
-          <div className="w-16 h-16">
+          <Link to="/" className="w-16 h-16">
             <img
-              loading="lazy"
               src="https://res.cloudinary.com/bazeercloud/image/upload/v1736017187/logo_gqb8jl.png"
               alt="Logo"
               className="w-full h-full object-contain"
             />
-          </div>
+          </Link>
 
-          {/* Navigation Links */}
+          {/* Navigation Links - Hidden on Mobile */}
           <div className="hidden md:flex items-center bg-zinc-950/50 backdrop-blur-sm px-8 py-2 rounded-full">
             <Link to="/" className="mx-4 text-white hover:text-amber-400 transition-colors">
               HOME
@@ -78,22 +63,13 @@ console.log(userData);
             <Link to="/product" className="mx-4 text-white hover:text-amber-400 transition-colors">
               PRODUCT
             </Link>
-            <Link to="#" className="mx-4 text-white hover:text-amber-400 transition-colors">
-              HELPFUL TIPS
-            </Link>
             <Link to="/blogs" className="mx-4 text-white hover:text-amber-400 transition-colors">
               BLOG
             </Link>
           </div>
 
           {/* Icons */}
-          <div className="flex items-center space-x-6">
-            <button className="p-2 hover:text-amber-400 transition-colors">
-              <Mail className="w-6 h-6" />
-            </button>
-            <button className="p-2 hover:text-amber-400 transition-colors">
-              <ShoppingCart className="w-6 h-6" />
-            </button>
+          <div className="flex items-center space-x-4">
             <button className="p-2">
               <div className="w-8 h-8 rounded-full bg-amber-400/20 flex items-center justify-center shadow-[0_0_15px_rgba(251,191,36,0.3)]">
                 <User className="w-5 h-5 text-amber-400" />
@@ -105,25 +81,21 @@ console.log(userData);
 
       {/* Background Image Section */}
       <div
-        className="absolute top-0 left-0 w-full sm:w-[60%] h-full bg-no-repeat bg-cover"
+        className="absolute top-0 left-0 w-full md:w-[60%] h-full bg-no-repeat bg-cover opacity-20"
         style={{
           backgroundImage: `url(https://res.cloudinary.com/bazeercloud/image/upload/v1736017187/logo_gqb8jl.png)`,
           backgroundPosition: 'center',
-          loading: 'lazy',
         }}
-      ></div>
-
-      {/* Semi-transparent Overlay for Visibility */}
-      <div className="absolute inset-0 bg-black/60"></div>
+      />
 
       {/* Main Content */}
-      <div className="relative z-10 flex items-center justify-center w-full px-4 mt-16 min-h-screen">
+      <div className="relative z-10 flex items-center justify-center w-full min-h-screen p-4 pt-20">
         {/* Register Form Section */}
-        <div className="w-[60%] max-w-2xl bg-white/10 backdrop-blur-md border border-white/30 p-12 rounded-3xl shadow-lg">
+        <div className="w-full md:w-[90%] lg:w-[60%] max-w-2xl bg-white/10 backdrop-blur-md border border-white/30 p-6 md:p-12 rounded-3xl shadow-lg">
           {/* User Icon */}
           <div className="flex justify-center mb-8">
-            <div className="w-24 h-24 rounded-full border-2 border-amber-400 flex items-center justify-center">
-              <User className="w-14 h-14 text-amber-400" />
+            <div className="w-20 h-20 md:w-24 md:h-24 rounded-full border-2 border-amber-400 flex items-center justify-center">
+              <User className="w-10 h-10 md:w-14 md:h-14 text-amber-400" />
             </div>
           </div>
 
@@ -173,7 +145,7 @@ console.log(userData);
               />
             </div>
 
-            <div className="flex justify-between text-sm pt-2">
+            <div className="text-center md:text-left">
               <Link to="/login" className="text-gray-500 hover:text-amber-400 transition-colors">
                 ALREADY HAVE AN ACCOUNT? LOGIN
               </Link>

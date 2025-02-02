@@ -1,5 +1,5 @@
 import { motion } from "framer-motion"
-import { Scale, FileCheck, ShieldCheck, Truck, RefreshCcw, Ban, HelpCircle } from "lucide-react"
+import { Scale } from "lucide-react"
 
 export default function TermsAndConditions() {
   const fadeIn = {
@@ -7,6 +7,49 @@ export default function TermsAndConditions() {
     animate: { opacity: 1, y: 0 },
     transition: { duration: 0.6 },
   }
+
+  const sections = [
+    {
+      title: "General Terms",
+      items: [
+        'Definitions: In these Terms and Conditions, "WPC" refers to Wood Plastic Composite, "Product" refers to any WPC product, and "Customer" refers to the person or organization purchasing the Product.',
+        "Acceptance: By purchasing the Product, the Customer acknowledges that they have read, understood, and accepted these Terms and Conditions.",
+        "Governing Law: These Terms and Conditions shall be governed by and construed in accordance with the laws of INDIA/MADHAY PARDESH.",
+      ],
+    },
+    {
+      title: "Product Warranty",
+      items: [
+        "Warranty Period: The Product is warranted to be free from defects in material and workmanship for a period of TEN(10) years from the date of purchase.",
+        "Warranty Coverage: The warranty covers defects in the Product that occur during normal use and does not cover damage caused by misuse, neglect, or accident.",
+        "Warranty Claim: To make a warranty claim, the Customer must notify the manufacturer in writing within the same days of discovering the defect.",
+      ],
+    },
+    {
+      title: "Payment Terms",
+      items: [
+        "Payment Method: Payment for the Product shall be made by Debit card, bank transfer, RTGS, NEFT, Online Pay.",
+        "Payment Terms: Payment is due upon receipt of the Product.",
+        "Late Payment: If payment is not made within the same days of the due date, the manufacturer reserves the right to charge interest on the outstanding amount.",
+      ],
+    },
+    {
+      title: "Delivery and Installation",
+      items: [
+        "Delivery: The Product shall be delivered to the Customer within the same days of receipt of payment.",
+        "Installation: The Customer is responsible for installing the Product, unless otherwise agreed in writing.",
+        "Installation Warranty: If the manufacturer installs the Product, it warrants that the installation will be done in a workmanlike manner.",
+      ],
+    },
+    {
+      title: "Cancellation and Returns",
+      items: [
+        "Cancellation: The Customer may cancel their order within 7 days of receipt of the Product.",
+        "Returns: The Customer may return the Product within 7 days of receipt, provided it is in its original condition and packaging.",
+        "Refund: The manufacturer shall refund the Customer's payment in full, minus any shipping and handling charges.",
+      ],
+    },
+  ]
 
   return (
     <div className="min-h-screen bg-black text-white py-16 px-4 sm:px-6 lg:px-8">
@@ -18,41 +61,26 @@ export default function TermsAndConditions() {
         </div>
 
         <div className="space-y-8">
-          <Section
-            icon={FileCheck}
-            title="Acceptance of Terms"
-            content="By accessing and using this website, you accept and agree to be bound by the terms and provision of this agreement. Additionally, when using this website's particular services, you shall be subject to any posted guidelines or rules applicable to such services."
-          />
-
-          <Section
-            icon={ShieldCheck}
-            title="Product Information"
-            content="We strive to provide accurate product descriptions and images. However, we do not warrant that product descriptions or other content is accurate, complete, reliable, current, or error-free. If a product offered by SARS WPC Doors is not as described, your sole remedy is to return it in unused condition."
-          />
-
-          <Section
-            icon={Truck}
-            title="Shipping & Delivery"
-            content="Delivery times are estimates only. SARS WPC Doors is not liable for any delays in delivery. Risk of loss and title for items purchased pass to you upon delivery of the items to the carrier. You are responsible for filing any claims with carriers for damaged and/or lost shipments."
-          />
-
-          <Section
-            icon={RefreshCcw}
-            title="Returns & Refunds"
-            content="Products can be returned within 7 days of delivery if they are in original condition. Custom-made products cannot be returned unless they are defective. Refunds will be processed within 14 business days of receiving the returned product."
-          />
-
-          <Section
-            icon={Ban}
-            title="Limitations of Liability"
-            content="SARS WPC Doors shall not be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the products."
-          />
-
-          <Section
-            icon={HelpCircle}
-            title="Dispute Resolution"
-            content="Any dispute arising from or relating to these terms and conditions will be resolved through arbitration in accordance with the Indian Arbitration and Conciliation Act, 1996. The venue for arbitration shall be Indore, India."
-          />
+          {sections.map((section, index) => (
+            <motion.div
+              key={index}
+              className="p-6 bg-amber-400/10 rounded-lg border border-amber-400/20"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+            >
+              <h2 className="text-xl font-semibold text-amber-400 mb-4">{section.title}</h2>
+              <ul className="space-y-4">
+                {section.items.map((item, itemIndex) => (
+                  <li key={itemIndex} className="text-gray-300 leading-relaxed flex items-start gap-2">
+                    <span className="text-amber-400 mt-1">•</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          ))}
 
           <div className="mt-12 p-6 bg-amber-400/10 rounded-lg border border-amber-400/20">
             <h2 className="text-xl font-semibold text-amber-400 mb-4">Contact Information</h2>
@@ -63,36 +91,9 @@ export default function TermsAndConditions() {
               <li>Address: SARS WPC Doors, Jabalpur, India</li>
             </ul>
           </div>
-
-          <div className="mt-8 p-6 bg-amber-400/5 rounded-lg border border-amber-400/10">
-            <p className="text-sm text-gray-400 text-center">
-              By using our website and services, you acknowledge that you have read, understood, and agree to be bound
-              by these Terms and Conditions.
-            </p>
-          </div>
         </div>
       </motion.div>
     </div>
   )
 }
-
-const Section = ({ icon: Icon, title, content }) => (
-  <motion.div
-    className="p-6 bg-amber-400/10 rounded-lg border border-amber-400/20"
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ duration: 0.5 }}
-  >
-    <div className="flex items-start gap-4">
-      <div className="p-2 bg-amber-400/20 rounded-full">
-        <Icon className="w-6 h-6 text-amber-400" />
-      </div>
-      <div>
-        <h2 className="text-xl font-semibold text-amber-400 mb-2">{title}</h2>
-        <p className="text-gray-300 leading-relaxed">{content}</p>
-      </div>
-    </div>
-  </motion.div>
-)
 

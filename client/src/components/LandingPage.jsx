@@ -2,13 +2,6 @@ import { useEffect } from "react"
 import { motion, useAnimation } from "framer-motion"
 import { useInView } from "react-intersection-observer"
 import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronDown,
-  Facebook,
-  Twitter,
-  Instagram,
-  PhoneIcon as WhatsApp,
   Leaf,
   Recycle,
   TreePine,
@@ -31,11 +24,11 @@ import {
 import eco2 from "../assets/eco2.jpg"
 import FAQ from "../pages/FAQ"
 import Carosal from "./Carosal"
-import Reviews from "../pages/Reviews"
 import Footer from "../pages/Footer"
 import Navbar from "./NavBar"
 import { useNavigate } from "react-router-dom"
 import { FaWhatsapp } from "react-icons/fa"
+import TopBar from "./TopBar"
 
 // Animation variants
 const fadeInLeft = {
@@ -93,7 +86,7 @@ const CircularEcoIcons = () => {
   ]
 
   return (
-    <div className="relative w-[300px] h-[300px] mx-auto">
+    <div className="relative w-[300px] h-[300px] mx-auto ">
       {ecoIcons.map((IconObj, index) => {
         const angle = (index / iconCount) * 2 * Math.PI
         const x = centerX + radius * Math.cos(angle)
@@ -155,24 +148,27 @@ export default function LandingPage() {
           />
         </div>
       </header>
-
+    
+    <div className="mt-2 p-2 md:mt-5 md:p-4">
+    <TopBar/>
+    </div>
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-16 md:py-24 lg:py-32 relative">
         <div className="absolute inset-0 bg-yellow-200/10 z-0"></div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center relative z-10">
           <AnimatedSection animation={fadeInLeft}>
             <div className="space-y-6">
-              <h1 className="text-5xl md:text-5xl lg:text-5xl font-bold text-amber-400 leading-tight">
-                Introducing SARS Premium Wpc Doors & Frame
+              <h1 className="text-3xl md:text-3xl lg:text-5xl font-bold text-amber-400 leading-tight">
+                DESIGN YOUR DREAM DOOR
               </h1>
               <p className="text-sm md:text-lg lg:text-lg text-white">
-              The ultimate fusion of sustainbaility, durability and style of wpc door . Experience the future of door
+                The ultimate fusion of sustainbaility, durability and style of wpc door . Experience the future of door
                 advance manufacturing technology with our eco- friendly , low- maintenance and energy efficiency
                 solution . Design to enhance your home curb appeal and protect the Enviromental
                 <br />
                 Creative and Unique
               </p>
-              <p className="text-sm md:text-base lg:text-lg text-amber-400">DESIGN YOUR DREAM DOOR</p>
+
               <button
                 className="bg-amber-400 text-black px-6 py-2 rounded-full hover:bg-amber-300 transition duration-300"
                 onClick={clickhandle}
@@ -186,7 +182,8 @@ export default function LandingPage() {
             <img
               src="https://res.cloudinary.com/bazeercloud/image/upload/v1737476007/SARS_1_Doors___1_-6__2_-removebg-preview_pbgmuw.png"
               alt="Featured Door"
-              className="w-full scale-150 max-w-8xl mx-auto h-auto object-contain"
+              className="w-full max-w-2xl mx-auto h-auto object-contain scale-110"
+              style={{ transformOrigin: "center" }}
             />
           </AnimatedSection>
         </div>
@@ -340,10 +337,10 @@ export default function LandingPage() {
         href="https://wa.me/918770229706"
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 z-50 bg-green-500 text-white p-3 rounded-full shadow-lg hover:bg-green-600 transition-colors duration-300"
+        className="fixed bottom-6 right-6 z-50 bg-green-500 hover:bg-green-600 text-white p-3 rounded-full shadow-lg transition-colors duration-300 flex items-center justify-center w-12 h-12"
         aria-label="Chat on WhatsApp"
       >
-        <FaWhatsapp size={24} />
+        <FaWhatsapp className="w-6 h-6" />
       </a>
     </div>
   )
