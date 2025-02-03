@@ -6,7 +6,6 @@ import {
   Recycle,
   TreePine,
   Wind,
-  DoorOpenIcon as Door,
   TreesIcon as Plant,
   Sprout,
   Sun,
@@ -86,7 +85,7 @@ const CircularEcoIcons = () => {
   ]
 
   return (
-    <div className="relative w-[300px] h-[300px] mx-auto ">
+    <div className="relative w-[300px] h-[300px] mx-auto">
       {ecoIcons.map((IconObj, index) => {
         const angle = (index / iconCount) * 2 * Math.PI
         const x = centerX + radius * Math.cos(angle)
@@ -116,16 +115,20 @@ const CircularEcoIcons = () => {
         )
       })}
       <motion.div
-        className="absolute text-amber-400"
+        className="absolute"
         style={{
-          left: `${centerX - 24}px`,
-          top: `${centerY - 24}px`,
+          left: `${centerX - 64}px`, // Adjusted for larger image (32px * 2)
+          top: `${centerY - 64}px`, // Adjusted for larger image (32px * 2)
         }}
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ delay: 1.6, duration: 0.5 }}
       >
-        <Door size={48} />
+        <img
+          src="https://res.cloudinary.com/bazeercloud/image/upload/v1737892518/superhomess/vwec4jnhvogev4jdztzz.jpg"
+          alt="Gate"
+          className="w-32 h-32 object-fill rounded-md shadow-lg"
+        />
       </motion.div>
     </div>
   )
@@ -148,10 +151,11 @@ export default function LandingPage() {
           />
         </div>
       </header>
-    
-    <div className="mt-2 p-2 md:mt-5 md:p-4">
-    <TopBar/>
-    </div>
+
+      <div className="mt-2 p-2 md:mt-5 md:p-4">
+        <TopBar />
+      </div>
+
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-16 md:py-24 lg:py-32 relative">
         <div className="absolute inset-0 bg-yellow-200/10 z-0"></div>
@@ -193,34 +197,6 @@ export default function LandingPage() {
       <AnimatedSection animation={fadeInUp}>
         <Carosal />
       </AnimatedSection>
-
-      {/* Product Features */}
-      {/* <section className="container mx-auto px-4 py-16">
-        <AnimatedSection animation={fadeInLeft}>
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-amber-400 mb-8">Product Features</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-8 rounded-xl bg-gradient-to-r from-amber-400/10 to-amber-400/5 backdrop-blur-sm border border-amber-400/20">
-            {[
-              "10 years assured warranty",
-              "Water proof",
-              "Durable and long-lasting",
-              "Termite Resistance",
-              "Low Maintenance",
-              "Natural Wood Look",
-              "Variety of Colors",
-              "Customization Options",
-              "Low Carbon Footprint",
-              "High Strength",
-              "Impact Resistance",
-              "Thermal Insulation",
-            ].map((feature, index) => (
-              <div key={index} className="flex items-center space-x-4 p-4">
-                <span className="text-amber-400 text-xl">✓</span>
-                <p className="text-amber-400 text-lg">{feature}</p>
-              </div>
-            ))}
-          </div>
-        </AnimatedSection>
-      </section> */}
 
       {/* USP Section */}
       <section className="container mx-auto px-4 py-16">
@@ -306,11 +282,6 @@ export default function LandingPage() {
           </div>
         </AnimatedSection>
       </section>
-
-      {/* Reviews */}
-      {/* <AnimatedSection animation={fadeInRight}>
-        <Reviews />
-      </AnimatedSection> */}
 
       <p className="flex items-center justify-center text-3xl font-bold text-gray-400 mt-4">ECO FRIENDLY</p>
 
