@@ -16,7 +16,7 @@ import Sitemap from "./pages/Sitemap"
 import Disclaimer from "./pages/Disclamer"
 import Dashboard from "./components/AdminPanel/Dashboard"
 import AdminPanel from "./components/AdminPanel/AdminPanel"
-
+import FAQ from "./pages/FAQ"
 function App() {
   // Get the user's authentication and role from the Redux store
   const user = useSelector((state) => state.auth.user)
@@ -51,6 +51,7 @@ function App() {
         <Route path="terms-and-conditions" element={<TermsAndConditions />} />
         <Route path="/sitemap" element={<Sitemap />} />
         <Route path="/disclaimer" element={<Disclaimer />} />
+        <Route path='/faq' element={<FAQ />} />
         
         {/* Protected Route for Admin */}
         <Route path="/dashboard" element={

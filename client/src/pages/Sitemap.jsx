@@ -9,6 +9,7 @@ export default function Sitemap() {
         { name: "Products", path: "/product" },
         { name: "About Us", path: "/about" },
         { name: "Contact Us", path: "/contact" },
+         { name:"FAQ" , path: "/faq"},
       ],
     },
     {

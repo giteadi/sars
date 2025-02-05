@@ -4,6 +4,7 @@ const { db } = require("../Config/db");
 const addBlog = async (req, res) => {
     try {
         const { title, description, imageUrl } = req.body;
+       
         console.log("blog req.body->",req.body);
         // Validate required fields
         if (!title || !description || !imageUrl) {

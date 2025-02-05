@@ -298,9 +298,9 @@ export default function LandingPage() {
       </section>
 
       {/* FAQs */}
-      <AnimatedSection animation={fadeInLeft}>
+      {/* <AnimatedSection animation={fadeInLeft}>
         <FAQ />
-      </AnimatedSection>
+      </AnimatedSection> */}
 
       {/* Footer */}
       <Footer />

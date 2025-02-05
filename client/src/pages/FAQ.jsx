@@ -68,7 +68,7 @@ export default function FAQ() {
   }
 
   return (
-    <section className="container mx-auto px-4 py-16">
+    <section className="container mx-auto px-4 py-16 w-full bg-black text-white">
       <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-amber-400 mb-8">Frequently Asked Questions</h2>
       <div className="space-y-4">
         {faqs.map((faq) => (
