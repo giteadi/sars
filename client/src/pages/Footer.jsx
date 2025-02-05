@@ -11,9 +11,9 @@ export default function Footer() {
             <Link to="/" className="text-amber-400 hover:text-amber-300 transition-colors">
               Home
             </Link>
-            <Link to="/blogs" className="text-amber-400 hover:text-amber-300 transition-colors">
+            {/* <Link to="/blogs" className="text-amber-400 hover:text-amber-300 transition-colors">
               Blog
-            </Link>
+            </Link> */}
             <Link to="/about" className="text-amber-400 hover:text-amber-300 transition-colors">
               About
             </Link>

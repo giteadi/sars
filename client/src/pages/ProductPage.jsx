@@ -8,6 +8,7 @@ import FAQ from "./FAQ";
 import Navbar from "../components/NavBar";
 import { fetchProducts } from '../Redux/propertySlice';
 import Spinner from "../components/Spinner";
+import Footer from './Footer';
 
 export default function ProductPage() {
   const dispatch = useDispatch();
@@ -197,6 +198,7 @@ export default function ProductPage() {
       </motion.section>
 
       <FAQ />
+      <Footer/>
     </div>
   );
 }

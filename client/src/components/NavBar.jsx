@@ -37,6 +37,9 @@ const Navbar = () => {
 
   const handleCartClick = () => navigate("/cart")
 
+  // Check if the user is an admin
+  const isAdmin = user?.role === 'admin';
+
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-30 transition-all duration-300 ${
@@ -68,7 +71,7 @@ const Navbar = () => {
               : "hidden"
           } md:relative md:top-0 md:border-none md:py-0 md:bg-transparent`}
         >
-          {["HOME", "PRODUCT", "BLOGS", "CONTACT", "ABOUT"].map((item) => (
+          {["HOME", "PRODUCT", "CONTACT", "ABOUT"].map((item) => (
             <Link
               key={item}
               to={item === "HOME" ? "/" : `/${item.toLowerCase()}`}
@@ -78,6 +81,16 @@ const Navbar = () => {
               {item}
             </Link>
           ))}
+          {/* Show Dashboard only if the user is an admin */}
+          {isAdmin && (
+            <Link
+              to="/dashboard"
+              className="mx-4 text-white hover:text-amber-400 transition-colors text-center md:text-left"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              DASHBOARD
+            </Link>
+          )}
         </div>
 
         {/* Icons */}
@@ -143,4 +156,3 @@ const Navbar = () => {
 }
 
 export default Navbar
-

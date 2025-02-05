@@ -7,7 +7,6 @@ export default function Sitemap() {
       links: [
         { name: "Home", path: "/" },
         { name: "Products", path: "/product" },
-        { name: "Blogs", path: "/blogs" },
         { name: "About Us", path: "/about" },
         { name: "Contact Us", path: "/contact" },
       ],

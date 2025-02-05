@@ -125,9 +125,9 @@ const CircularEcoIcons = () => {
         transition={{ delay: 1.6, duration: 0.5 }}
       >
         <img
-          src="https://res.cloudinary.com/bazeercloud/image/upload/v1737892518/superhomess/vwec4jnhvogev4jdztzz.jpg"
+          src="https://res.cloudinary.com/bazeercloud/image/upload/v1736017187/logo_gqb8jl.png"
           alt="Gate"
-          className="w-32 h-32 object-fill rounded-md shadow-lg"
+          className="w-32  object-fill rounded-md shadow-lg"
         />
       </motion.div>
     </div>

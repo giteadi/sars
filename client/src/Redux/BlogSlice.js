@@ -1,7 +1,10 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-// Define initial state
+// API Base URL
+const BASE_URL = 'https://api.sarsdecor.com/api/v1/blogs';
+
+// Initial state
 const initialState = {
     blogs: [],
     blog: null,
@@ -9,81 +12,80 @@ const initialState = {
     error: null,
 };
 
-// Async actions (thunks) for making API calls
-export const addBlog = createAsyncThunk('blogs/addBlog', async (blogData) => {
+// Helper function for handling API errors
+const handleError = (error, rejectWithValue) => {
+    return rejectWithValue(error.response ? error.response.data.message : error.message);
+};
+
+// Async thunks
+export const addBlog = createAsyncThunk('blogs/addBlog', async (blogData, { rejectWithValue }) => {
     try {
-        const response = await axios.post('https://api.sarsdecor.com/api/v1/blogs', blogData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
+        const response = await axios.post(BASE_URL, blogData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
         });
-        return response.data;  // Response will include the blog details with image URL
+        return response.data.blog;
     } catch (error) {
-        throw Error(error.response ? error.response.data.message : error.message);
+        return handleError(error, rejectWithValue);
     }
 });
 
-export const getAllBlogs = createAsyncThunk('blogs/getAllBlogs', async () => {
+export const getAllBlogs = createAsyncThunk('blogs/getAllBlogs', async (_, { rejectWithValue }) => {
     try {
-        const response = await axios.get('https://api.sarsdecor.com/api/v1/blogs');
-        return response.data.blogs;  // Assuming the response contains a "blogs" array
+        const response = await axios.get(BASE_URL);
+        return response.data.blogs;
     } catch (error) {
-        throw Error(error.response ? error.response.data.message : error.message);
+        return handleError(error, rejectWithValue);
     }
 });
 
-export const getBlogById = createAsyncThunk('blogs/getBlogById', async (id) => {
+export const getBlogById = createAsyncThunk('blogs/getBlogById', async (id, { rejectWithValue }) => {
     try {
-        const response = await axios.get(`https://api.sarsdecor.com/api/v1/blogs/${id}`);
-        return response.data.blog;  // Assuming the response contains a single "blog" object
+        const response = await axios.get(`${BASE_URL}/${id}`);
+        return response.data.blog;
     } catch (error) {
-        throw Error(error.response ? error.response.data.message : error.message);
+        return handleError(error, rejectWithValue);
     }
 });
 
-export const updateBlog = createAsyncThunk('blogs/updateBlog', async (blogData) => {
+export const updateBlog = createAsyncThunk('blogs/updateBlog', async (blogData, { rejectWithValue }) => {
     try {
-        const response = await axios.put(`https://api.sarsdecor.com/api/v1/blogs/${blogData.id}`, blogData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
+        const response = await axios.put(`${BASE_URL}/${blogData.id}`, blogData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
         });
-        return response.data.blog;  // Assuming response contains updated blog
+        return response.data.blog;
     } catch (error) {
-        throw Error(error.response ? error.response.data.message : error.message);
+        return handleError(error, rejectWithValue);
     }
 });
 
-export const deleteBlog = createAsyncThunk('blogs/deleteBlog', async (id) => {
+export const deleteBlog = createAsyncThunk('blogs/deleteBlog', async (id, { rejectWithValue }) => {
     try {
-        await axios.delete(`https://api.sarsdecor.com/api/v1/blogs/${id}`);
-        return id;  // Returning the blog ID to remove it from the state
+        await axios.delete(`${BASE_URL}/${id}`);
+        return id;
     } catch (error) {
-        throw Error(error.response ? error.response.data.message : error.message);
+        return handleError(error, rejectWithValue);
     }
 });
 
-// Slice definition
+// Blog slice
 const blogSlice = createSlice({
     name: 'blogs',
     initialState,
     reducers: {},
     extraReducers: (builder) => {
         builder
-            // Add blog
             .addCase(addBlog.pending, (state) => {
                 state.loading = true;
             })
             .addCase(addBlog.fulfilled, (state, action) => {
                 state.loading = false;
-                state.blogs.push(action.payload.blog);
+                state.blogs.push(action.payload);
             })
             .addCase(addBlog.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.error.message;
+                state.error = action.payload;
             })
 
-            // Get all blogs
             .addCase(getAllBlogs.pending, (state) => {
                 state.loading = true;
             })
@@ -93,10 +95,9 @@ const blogSlice = createSlice({
             })
             .addCase(getAllBlogs.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.error.message;
+                state.error = action.payload;
             })
 
-            // Get blog by ID
             .addCase(getBlogById.pending, (state) => {
                 state.loading = true;
             })
@@ -106,26 +107,22 @@ const blogSlice = createSlice({
             })
             .addCase(getBlogById.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.error.message;
+                state.error = action.payload;
             })
 
-            // Update blog
             .addCase(updateBlog.pending, (state) => {
                 state.loading = true;
             })
             .addCase(updateBlog.fulfilled, (state, action) => {
                 state.loading = false;
                 const index = state.blogs.findIndex((blog) => blog.id === action.payload.id);
-                if (index !== -1) {
-                    state.blogs[index] = action.payload;
-                }
+                if (index !== -1) state.blogs[index] = action.payload;
             })
             .addCase(updateBlog.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.error.message;
+                state.error = action.payload;
             })
 
-            // Delete blog
             .addCase(deleteBlog.pending, (state) => {
                 state.loading = true;
             })
@@ -135,7 +132,7 @@ const blogSlice = createSlice({
             })
             .addCase(deleteBlog.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.error.message;
+                state.error = action.payload;
             });
     },
 });

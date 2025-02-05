@@ -1,4 +1,5 @@
-import { Route, Routes } from "react-router-dom"
+import { Route, Routes, Navigate } from "react-router-dom"
+import { useSelector } from "react-redux"
 import LandingPage from "./components/LandingPage"
 import LoginPage from "./pages/login"
 import RegisterPage from "./pages/Register"
@@ -13,8 +14,26 @@ import PrivacyPolicy from "./pages/PrivacyPolicy"
 import TermsAndConditions from "./pages/TermsAndConditions"
 import Sitemap from "./pages/Sitemap"
 import Disclaimer from "./pages/Disclamer"
+import Dashboard from "./components/AdminPanel/Dashboard"
+import AdminPanel from "./components/AdminPanel/AdminPanel"
 
 function App() {
+  // Get the user's authentication and role from the Redux store
+  const user = useSelector((state) => state.auth.user)
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated)
+
+  // Check if the user is an admin
+  const isAdmin = user?.role === 'admin'
+
+  // Route protection for the admin dashboard
+  const ProtectedRoute = ({ children }) => {
+    if (!isAuthenticated || !isAdmin) {
+      // Redirect to login if not authenticated or not an admin
+      return <Navigate to="/login" />;
+    }
+    return children;
+  };
+
   return (
     <div>
       <Routes>
@@ -32,6 +51,13 @@ function App() {
         <Route path="terms-and-conditions" element={<TermsAndConditions />} />
         <Route path="/sitemap" element={<Sitemap />} />
         <Route path="/disclaimer" element={<Disclaimer />} />
+        
+        {/* Protected Route for Admin */}
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
+            <AdminPanel />
+          </ProtectedRoute>
+        } />
       </Routes>
     </div>
   )
